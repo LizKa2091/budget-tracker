@@ -1,10 +1,9 @@
 import type { FC } from "react";
+import Router from "./Router";
 
 const App: FC = () => {
    return (
-      <>
-         hi
-      </>
+      <Router />
    )
 }
 
