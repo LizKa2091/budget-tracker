@@ -2,6 +2,7 @@
 
 .env
 
+*.css
 */uploads
 # Logs
 logs
