@@ -1,11 +1,7 @@
-interface ExpenseItem {
-   date: string;
-   title: string;
-   amount: number;
-}
+import { type IExpenseItem } from "../types/expenses";
 
-export const extractExpFromJson = (data: any): ExpenseItem[] => {
-   const expenses: ExpenseItem[] = [];
+export const extractExpFromJson = (data: any): IExpenseItem[] => {
+   const expenses: IExpenseItem[] = [];
 
    const pages = data.result?.document?.page || [];
 
