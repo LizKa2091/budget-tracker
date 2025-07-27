@@ -1,20 +1,25 @@
 import { createContext, useContext, useEffect, useState, type FC, type ReactNode } from "react";
-import type { IChartSlot } from "../types/expenses";
+import type { IChartSlot, IChartItem } from "../types/charts";
 
 interface IChartContext {
    charts: IChartSlot[];
-   addChart: (slot: IChartSlot) => void;
-   deleteChart: (slot: IChartSlot) => void;
-}
+   addChart: (slot: IChartItem[]) => void;
+   deleteChart: (slotId: number) => void;
+};
 
 interface IChartContextProvider {
    children: ReactNode;
-}
+};
 
 const ChartContext = createContext<IChartContext | undefined>(undefined);
 
 const ChartContextProvider: FC<IChartContextProvider> = ({ children }) => {
-   const [charts, setCharts] = useState<IChartSlot[]>([]);
+   const [charts, setCharts] = useState<IChartSlot[]>([
+      { id: 1, data: null },
+      { id: 2, data: null },
+      { id: 3, data: null },
+      { id: 4, data: null }
+   ]);
 
    useEffect(() => {
       const savedCharts = localStorage.getItem('charts');
@@ -22,18 +27,35 @@ const ChartContextProvider: FC<IChartContextProvider> = ({ children }) => {
       if (savedCharts) {
          setCharts(JSON.parse(savedCharts));
       }
+      console.log('saved charts:', charts)
    }, []);
 
    useEffect(() => {
       localStorage.setItem('charts', JSON.stringify(charts));
+      console.log('updated charts:', charts)
    }, [charts]);
 
-   const addChart = (newSlot: IChartSlot) => {
-      setCharts((prev) => [...prev, newSlot].slice(-4));
+   const addChart = (newSlotData: IChartItem[]): void => {
+      setCharts((prev) => {
+         const emptyDataIndex = prev.findIndex(slot => slot.data === null);
+
+         if (emptyDataIndex !== -1) {
+            const updatedCharts: IChartSlot[] = [...prev];
+            updatedCharts[emptyDataIndex] = { ...updatedCharts[emptyDataIndex], data: newSlotData };
+
+            return updatedCharts;
+         }
+         
+         const shiftedCharts = [...prev.slice(1), { ...prev[3], data: newSlotData }];
+
+         return shiftedCharts;
+      })
    };
 
-   const deleteChart = (slot: IChartSlot) => {
-      setCharts((prev) => prev.filter((prevSlot) => prevSlot.id !== slot.id));
+   const deleteChart = (slotId: number): void => {
+      if (slotId > 4 || slotId < 0) return;
+
+      setCharts((prev) => prev.map(currSlot => currSlot.id === slotId ? {...currSlot, data: null} : currSlot));
    };
 
    return (
