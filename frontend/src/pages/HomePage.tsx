@@ -1,10 +1,10 @@
-import { type FC } from 'react';
-import ImportPdf from '../features/import-pdf/ImportPdf';
+import { type FC } from 'react'
 
 const HomePage: FC = () => {
    return (
       <>
-         <ImportPdf />
+         Добро пожаловать на Budget Tracker
+         Ваши сохранённые диаграммы:  
       </>
    )
 }
