@@ -5,6 +5,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { useImportPdf } from '../model/useImportPdf';
 import ChartExports from '../../../shared/context/ChartContext';
 import type { IExpenseItem } from '../../../shared/types/expenses';
+import type { IChartItem } from '../../../shared/types/charts';
+import { defineCategory } from '../../../shared/lib/defineCategory';
 const { useChartContext } = ChartExports;
 
 interface IFormValues {
@@ -32,7 +34,12 @@ const ImportPdf: FC = () => {
       importPdf(data.pdfFile, {
          onSuccess: (expenseItems: IExpenseItem[]) => {
             setIsSuccess(true);
-            addChart(expenseItems);
+            const expenseItemsWithCategories: IChartItem[] = [];
+
+            for (const item of expenseItems) {
+               expenseItemsWithCategories.push({ ...item, category: defineCategory(item.title) });
+            }
+            addChart(expenseItemsWithCategories);
          },
          onError: () => setIsSuccess(false),
          onSettled: () => setIsLoading(false)
