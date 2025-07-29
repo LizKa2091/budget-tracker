@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useState, type FC, type ReactNode } from "react";
 import type { IChartSlot, IChartItem } from "../types/charts";
+import { categorizeExpenses } from "../lib/categorizeExpenses";
+import type { IExpensesByCategories } from "../types/expenses";
 
 interface IChartContext {
    charts: IChartSlot[];
@@ -39,17 +41,19 @@ const ChartContextProvider: FC<IChartContextProvider> = ({ children }) => {
    }, [charts, isInitialized]);
 
    const addChart = (newSlotData: IChartItem[]): void => {
+      const categorizedSlotData: IExpensesByCategories[] | null = categorizeExpenses(newSlotData);
+
       setCharts((prev) => {
          const emptyDataIndex = prev.findIndex(slot => slot.data === null);
 
          if (emptyDataIndex !== -1) {
             const updatedCharts: IChartSlot[] = [...prev];
-            updatedCharts[emptyDataIndex] = { ...updatedCharts[emptyDataIndex], data: newSlotData };
+            updatedCharts[emptyDataIndex] = { ...updatedCharts[emptyDataIndex], data: newSlotData, categorizedData: categorizedSlotData };
 
             return updatedCharts;
          }
          
-         const shiftedCharts = [...prev.slice(1), { ...prev[3], data: newSlotData }];
+         const shiftedCharts = [...prev.slice(1), { ...prev[3], data: newSlotData, categorizedData: categorizedSlotData }];
          return shiftedCharts;
       })
    };
