@@ -1,0 +1,80 @@
+import { createContext, useContext, useEffect, useState, type FC, type ReactNode } from "react";
+import type { IChartSlot, IChartItem } from "../types/charts";
+
+interface IChartContext {
+   charts: IChartSlot[];
+   addChart: (slot: IChartItem[]) => void;
+   deleteChart: (slotId: number) => void;
+};
+
+interface IChartContextProvider {
+   children: ReactNode;
+};
+
+const ChartContext = createContext<IChartContext | undefined>(undefined);
+
+const ChartContextProvider: FC<IChartContextProvider> = ({ children }) => {
+   const [isInitialized, setIsInitialized] = useState<boolean>(false);
+   const [charts, setCharts] = useState<IChartSlot[]>([
+      { id: 1, data: null },
+      { id: 2, data: null },
+      { id: 3, data: null },
+      { id: 4, data: null }
+   ]);
+
+   useEffect(() => {
+      const savedCharts = localStorage.getItem('charts');
+
+      if (savedCharts) {
+         setCharts(JSON.parse(savedCharts));
+      }
+
+      setIsInitialized(true);
+   }, []);
+
+   useEffect(() => {
+      if (isInitialized) {
+         localStorage.setItem('charts', JSON.stringify(charts));
+      }
+   }, [charts, isInitialized]);
+
+   const addChart = (newSlotData: IChartItem[]): void => {
+      setCharts((prev) => {
+         const emptyDataIndex = prev.findIndex(slot => slot.data === null);
+
+         if (emptyDataIndex !== -1) {
+            const updatedCharts: IChartSlot[] = [...prev];
+            updatedCharts[emptyDataIndex] = { ...updatedCharts[emptyDataIndex], data: newSlotData };
+
+            return updatedCharts;
+         }
+         
+         const shiftedCharts = [...prev.slice(1), { ...prev[3], data: newSlotData }];
+         return shiftedCharts;
+      })
+   };
+
+   const deleteChart = (slotId: number): void => {
+      if (slotId > 4 || slotId < 0) return;
+
+      setCharts((prev) => prev.map(currSlot => currSlot.id === slotId ? {...currSlot, data: null} : currSlot));
+   };
+
+   return (
+      <ChartContext.Provider value={{ charts, addChart, deleteChart }}>
+         {children}
+      </ChartContext.Provider>
+   )
+};
+
+const useChartContext = () => {
+   const context = useContext(ChartContext);
+
+   if (!context) throw new Error('chart context должен использоваться внутри chart provider');
+
+   return context;
+};
+
+const ChartExports = { ChartContext, ChartContextProvider, useChartContext }
+
+export default ChartExports;

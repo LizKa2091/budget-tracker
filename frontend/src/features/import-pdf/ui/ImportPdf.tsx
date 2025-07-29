@@ -1,7 +1,13 @@
-import { useState, type FC } from 'react';
+import { useEffect, useState, type FC } from 'react';
 import { Button, Form, Upload } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import { Controller, useForm } from 'react-hook-form';
+import { useImportPdf } from '../model/useImportPdf';
+import ChartExports from '../../../shared/context/ChartContext';
+import type { IExpenseItem } from '../../../shared/types/expenses';
+import type { IChartItem } from '../../../shared/types/charts';
+import { defineCategory } from '../../../shared/lib/defineCategory';
+const { useChartContext } = ChartExports;
 
 interface IFormValues {
    pdfFile: File | null;
@@ -9,29 +15,35 @@ interface IFormValues {
 
 const ImportPdf: FC = () => {
    const { handleSubmit, control } = useForm<IFormValues>();
+   const { mutate: importPdf } = useImportPdf();
+   const { addChart } = useChartContext();
    const [isLoading, setIsLoading] = useState<boolean>(false);
+   const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
+
+   useEffect(() => {
+      if (isLoading) {
+         setIsSuccess(null);
+      }
+   }, [isLoading]);
 
    const onSubmit = async (data: IFormValues): Promise<void> => {
       if (!data.pdfFile) return;
 
       setIsLoading(true);
-      try {
-         const response = await fetch('http://localhost:4000/upload', {
-            method: 'POST',
-            body: data.pdfFile
-         });
 
-         if (!response.ok) throw new Error('ошибка сервера')
-         
-         const result = await response.json();
-         console.log(result);
-      }
-      catch (e) {
-         console.error(`ошибка загрузки ${e}`);
-      }
-      finally {
-         setIsLoading(false);
-      }
+      importPdf(data.pdfFile, {
+         onSuccess: (expenseItems: IExpenseItem[]) => {
+            setIsSuccess(true);
+            const expenseItemsWithCategories: IChartItem[] = [];
+
+            for (const item of expenseItems) {
+               expenseItemsWithCategories.push({ ...item, category: defineCategory(item.title) });
+            }
+            addChart(expenseItemsWithCategories);
+         },
+         onError: () => setIsSuccess(false),
+         onSettled: () => setIsLoading(false)
+      });
    };
 
    const handleBeforeUpload = (file: File, onChange: (file: File | null) => void) => {
@@ -69,6 +81,8 @@ const ImportPdf: FC = () => {
             <Button htmlType='submit'>Отправить</Button>
          </Form>
          {isLoading && <p>Загрузка</p>}
+         {isSuccess && <span>Файл успешно загружен</span>}
+         {isSuccess === false && <span>Произошла ошибка при загрузке файла</span>}
       </div>
    )
 }
