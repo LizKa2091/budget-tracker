@@ -10,7 +10,7 @@ const DashBoardPage: FC = () => {
    }
    return (
       <>
-         <BudgetChart />
+         <BudgetChart chartId={+paramsId} />
       </>
    )
 }
