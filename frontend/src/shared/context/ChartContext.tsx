@@ -14,6 +14,7 @@ interface IChartContextProvider {
 const ChartContext = createContext<IChartContext | undefined>(undefined);
 
 const ChartContextProvider: FC<IChartContextProvider> = ({ children }) => {
+   const [isInitialized, setIsInitialized] = useState<boolean>(false);
    const [charts, setCharts] = useState<IChartSlot[]>([
       { id: 1, data: null },
       { id: 2, data: null },
@@ -27,13 +28,15 @@ const ChartContextProvider: FC<IChartContextProvider> = ({ children }) => {
       if (savedCharts) {
          setCharts(JSON.parse(savedCharts));
       }
-      console.log('saved charts:', charts)
+
+      setIsInitialized(true);
    }, []);
 
    useEffect(() => {
-      localStorage.setItem('charts', JSON.stringify(charts));
-      console.log('updated charts:', charts)
-   }, [charts]);
+      if (isInitialized) {
+         localStorage.setItem('charts', JSON.stringify(charts));
+      }
+   }, [charts, isInitialized]);
 
    const addChart = (newSlotData: IChartItem[]): void => {
       setCharts((prev) => {
@@ -47,7 +50,6 @@ const ChartContextProvider: FC<IChartContextProvider> = ({ children }) => {
          }
          
          const shiftedCharts = [...prev.slice(1), { ...prev[3], data: newSlotData }];
-
          return shiftedCharts;
       })
    };
