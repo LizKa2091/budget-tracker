@@ -1,6 +1,9 @@
+import type { IExpensesByCategories } from "./expenses";
+
 export interface IChartSlot {
    id: number;
    data: IChartItem[] | null;
+   categorizedData?: IExpensesByCategories[] | null;
 }
 
 export interface IChartItem {
@@ -9,3 +12,5 @@ export interface IChartItem {
    amount: number;
    category?: string;
 }
+
+export type ChartMode = 'categories' | 'default';
