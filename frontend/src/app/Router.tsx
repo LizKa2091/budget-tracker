@@ -10,7 +10,7 @@ const Router: FC = () => {
          <Routes>
             <Route path='/' element={<HomePage />} />
             <Route path='/import-pdf' element={<ImportPdfPage />} />
-            <Route path='/dashboard' element={<DashBoardPage />} />
+            <Route path='/dashboard/:id' element={<DashBoardPage />} />
          </Routes>
       </BrowserRouter>
    )
