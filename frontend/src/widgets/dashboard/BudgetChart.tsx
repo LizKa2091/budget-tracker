@@ -3,6 +3,7 @@ import { Pie, PieChart, ResponsiveContainer, Cell, Tooltip } from 'recharts';
 import ChartExports from '../../shared/context/ChartContext';
 import { type ChartMode, type IChartItem } from '../../shared/types/charts';
 import type { IExpensesByCategories } from '../../shared/types/expenses';
+import { getRandomColor } from '../../shared/lib/getRandomColor';
 
 const { useChartContext } = ChartExports;
 
@@ -13,13 +14,25 @@ interface IBudgetChartProps {
 
 const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode }) => {
    const [chartData, setChartData] = useState<IChartItem[] | IExpensesByCategories[] | null>(null);
+   const [itemColors, setItemColors] = useState<string[]>([]);
 
    const { charts } = useChartContext();
 
    useEffect(() => {      
-      if (displayMode === 'categories') setChartData(charts[chartId-1].categorizedData || null);
+      if (displayMode === 'categories') {
+         const categorizedItems: IExpensesByCategories[] | null = charts[chartId-1].categorizedData || null;
+         setChartData(categorizedItems);
 
-      else setChartData(charts[chartId-1].data || null);
+         const colors: string[] = [];
+         categorizedItems?.forEach(() => colors.push(getRandomColor()));
+
+         setItemColors(colors);
+      }
+
+      else {
+         setChartData(charts[chartId-1].data || null);
+         setItemColors([]);
+      };
    }, [chartId, charts, displayMode]);
 
    const pieData = useMemo(() => {
@@ -43,12 +56,12 @@ const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode }) => {
       <div style={{ width: '100%', height: '400px' }}>
          <ResponsiveContainer width='100%' height='100%'>
             <PieChart>
-               <Pie data={pieData} cx='50%' cy='50%' outerRadius={80} fill='#8884d8' dataKey='amount' label={({ category, percent }) => `${category}: ${(percent ? percent * 100 : 0).toFixed(0)}%`}> 
-                  {pieData.map((entry, index) => (
-                     <Cell key={index} />
+               <Pie data={pieData} cx='50%' cy='50%' outerRadius={150} fill='#8884d8' dataKey='amount' label={({ category, percent }) => `${category}: ${(percent ? percent * 100 : 0).toFixed(0)}%`}> 
+                  {pieData.map((_, index) => (
+                     <Cell key={index} fill={itemColors[index]} />
                   ))}
-                  <Tooltip formatter={(value, name) => [`${value} ₽`, name]} />
                </Pie>
+               <Tooltip formatter={(value: number, name: string, props: any) => [`${value} ₽`, props.payload?.category || name]} labelFormatter={(category) => category} />
             </PieChart>
          </ResponsiveContainer>
       </div>
