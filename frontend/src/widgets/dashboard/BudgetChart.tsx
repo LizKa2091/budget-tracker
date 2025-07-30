@@ -56,12 +56,20 @@ const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode }) => {
       <div style={{ width: '100%', height: '400px' }}>
          <ResponsiveContainer width='100%' height='100%'>
             <PieChart>
-               <Pie data={pieData} cx='50%' cy='50%' outerRadius={150} fill='#8884d8' dataKey='amount' label={({ category, percent }) => `${category}: ${(percent ? percent * 100 : 0).toFixed(0)}%`}> 
+               <Pie 
+                  data={pieData} 
+                  cx='50%' cy='50%' outerRadius={150} 
+                  fill='#8884d8' 
+                  dataKey='amount' 
+                  label={({ category, percent }) =>  percent && percent * 100 >= 1 ? `${category}: ${(percent * 100).toFixed(0)}%` : ''}> 
                   {pieData.map((_, index) => (
                      <Cell key={index} fill={itemColors[index]} />
                   ))}
                </Pie>
-               <Tooltip formatter={(value: number, name: string, props: any) => [`${value} ₽`, props.payload?.category || name]} labelFormatter={(category) => category} />
+               <Tooltip 
+                  formatter={(value: number, name: string, props: any) => [`${value} ₽`, props.payload?.category || name]} 
+                  labelFormatter={(category) => category} 
+               />
             </PieChart>
          </ResponsiveContainer>
       </div>
