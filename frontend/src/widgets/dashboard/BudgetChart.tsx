@@ -4,6 +4,8 @@ import ChartExports from '../../shared/context/ChartContext';
 import { type ChartMode, type IChartItem } from '../../shared/types/charts';
 import type { IExpensesByCategories } from '../../shared/types/expenses';
 import { getRandomColor } from '../../shared/lib/getRandomColor';
+import { Button, Flex } from 'antd';
+import styles from './BudgetChart.module.scss';
 
 const { useChartContext } = ChartExports;
 
@@ -12,9 +14,13 @@ interface IBudgetChartProps {
    displayMode: ChartMode;
 };
 
+const maxRadiusSize: number = 500;
+const minRadiusSize: number = 150;
+
 const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode }) => {
    const [chartData, setChartData] = useState<IChartItem[] | IExpensesByCategories[] | null>(null);
    const [itemColors, setItemColors] = useState<string[]>([]);
+   const [currRadius, setCurrRadius] = useState<number>(150);
 
    const { charts } = useChartContext();
 
@@ -48,17 +54,30 @@ const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode }) => {
       return (chartData as IChartItem[]).map(item => ({ category: item.title, amount: item.amount }));
    }, [chartData, displayMode]);
 
+   const handleChangeRadius = (value: string): void => {
+      if (value === '+') {
+         if (currRadius + 10 > maxRadiusSize) return;
+
+         setCurrRadius((prev: number) => prev + 10);
+      }
+      else if (value === '-') {
+         if (currRadius - 10 < minRadiusSize) return;
+
+         setCurrRadius((prev: number) => prev - 10);
+      }
+   }
+
    if (chartData === null) {
       return <span>нет данных</span>
    }
 
    return (
-      <div style={{ width: '100%', height: '400px' }}>
+      <div className={styles.container} style={{ width: '92.5%', height: '90dvh' }}>
          <ResponsiveContainer width='100%' height='100%'>
             <PieChart>
                <Pie 
                   data={pieData} 
-                  cx='50%' cy='50%' outerRadius={150} 
+                  cx='50%' cy='50%' outerRadius={currRadius} 
                   fill='#8884d8' 
                   dataKey='amount' 
                   label={({ category, percent }) =>  percent && percent * 100 >= 1 ? `${category}: ${(percent * 100).toFixed(0)}%` : ''}> 
@@ -72,6 +91,10 @@ const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode }) => {
                />
             </PieChart>
          </ResponsiveContainer>
+         <Flex vertical gap='middle'>
+            <Button onClick={() => handleChangeRadius('+')} type='default'>+ Увеличить</Button>
+            <Button onClick={() => handleChangeRadius('-')} type='default'>- Уменьшить</Button>
+         </Flex>
       </div>
    )
 }
