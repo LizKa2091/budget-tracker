@@ -9,6 +9,7 @@ dotenv.config();
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 const API_KEY = process.env.PDFCO_API_KEY ?? '';
 
@@ -36,6 +37,53 @@ app.post('/upload', async (req: Request, res: Response) => {
       res.json({ message: 'Файл успешно распознан', result: parsedResult });
    } catch (e: any) {
       res.status(500).json({ error: e.message || 'unknown error' });
+   }
+});
+
+app.post('/chat', async (req: Request, res: Response) => {
+   try {
+      const { prompt, expenses } = req.body;
+
+      if (!prompt || !expenses) {
+         return res.status(400).json({ error: 'prompt и expenses обязательны' });
+      }
+
+      const openrouterApiKey = process.env.OPENROUTER_API_KEY;
+      if (!openrouterApiKey) throw new Error('Нет ключа OpenRouter');
+
+      const fullPrompt = `
+         Пользователь предоставил следующие расходы: ${JSON.stringify(expenses, null, 2)}.
+         Запрос пользователя: "${prompt}".
+         Ответь кратко, с конкретными советами.
+      `;
+
+      const aiResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${openrouterApiKey}`
+         },
+         body: JSON.stringify({
+            model: "deepseek/deepseek-chat-v3-0324:free",
+            messages: [
+               { role: "user", content: fullPrompt }
+            ]
+         })
+      });
+
+      if (!aiResponse.ok) {
+         const errorText = await aiResponse.text();
+         throw new Error(`Ошибка от AI API: ${errorText}`);
+      }
+
+      const aiJson = await aiResponse.json();
+      const content = aiJson.choices?.[0]?.message?.content || 'Нет ответа от AI';
+
+      res.json({ answer: content });
+
+   } 
+   catch (e: any) {
+      res.status(500).json({ error: e.message || 'Ошибка AI анализа' });
    }
 });
 

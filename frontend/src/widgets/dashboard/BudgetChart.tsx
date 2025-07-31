@@ -6,6 +6,7 @@ import type { IExpensesByCategories } from '../../shared/types/expenses';
 import { getRandomColor } from '../../shared/lib/getRandomColor';
 import { Button, Flex } from 'antd';
 import styles from './BudgetChart.module.scss';
+import BudgetSimulator from '../budget-simulator/ui/BudgetSimulator';
 
 const { useChartContext } = ChartExports;
 
@@ -72,8 +73,8 @@ const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode }) => {
    }
 
    return (
-      <div className={styles.container} style={{ width: '92.5%', height: '90dvh' }}>
-         <ResponsiveContainer width='100%' height='100%'>
+      <div className={styles.container}>
+         <ResponsiveContainer width='80%' height='100%'>
             <PieChart>
                <Pie 
                   data={pieData} 
@@ -91,9 +92,13 @@ const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode }) => {
                />
             </PieChart>
          </ResponsiveContainer>
-         <Flex vertical gap='middle'>
-            <Button onClick={() => handleChangeRadius('+')} type='default'>+ Увеличить</Button>
-            <Button onClick={() => handleChangeRadius('-')} type='default'>- Уменьшить</Button>
+         <Flex vertical gap='large' align='center'>
+            <BudgetSimulator chartData={chartData} />
+            <p>Масштаб</p>
+            <Flex vertical gap='small'>
+               <Button onClick={() => handleChangeRadius('+')} type='default'>+ Увеличить</Button>
+               <Button onClick={() => handleChangeRadius('-')} type='default'>- Уменьшить</Button>
+            </Flex>
          </Flex>
       </div>
    )
