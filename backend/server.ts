@@ -9,6 +9,7 @@ dotenv.config();
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 const API_KEY = process.env.PDFCO_API_KEY ?? '';
 
@@ -36,6 +37,42 @@ app.post('/upload', async (req: Request, res: Response) => {
       res.json({ message: 'Файл успешно распознан', result: parsedResult });
    } catch (e: any) {
       res.status(500).json({ error: e.message || 'unknown error' });
+   }
+});
+
+app.post('/chat', async (req: Request, res: Response) => {
+   const prompt = req.body.prompt;
+   const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
+
+   if (!prompt) {
+      return res.status(400).json({ error: 'Промпт обязателен' });
+   }
+
+   try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${OPENROUTER_KEY}`
+         },
+         body: JSON.stringify({
+            model: 'deepseek/deepseek-chat-v3-0324:free',
+            messages: [{ role: 'user', content: prompt }]
+         })
+      });
+
+      if (!response.ok) {
+         const errorText = await response.text();
+         throw new Error(`Ошибка от OpenRouter: ${errorText}`);
+      }
+
+      const data = await response.json();
+      const answer = data.choices?.[0]?.message?.content;
+
+      res.json({ answer });
+   } 
+   catch (err: any) {
+      res.status(500).json({ error: err.message || 'Ошибка обработки запроса' });
    }
 });
 
