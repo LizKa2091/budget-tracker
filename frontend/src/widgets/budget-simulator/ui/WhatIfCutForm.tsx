@@ -4,6 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useAIAdvice } from '../model/useAIAdvice';
 import type { IChartItem } from '../../../shared/types/charts';
 import type { IExpensesByCategories } from '../../../shared/types/expenses';
+import Typewriter from './Typewriter';
 
 interface ICutFormData {
    value?: string;
@@ -12,6 +13,8 @@ interface ICutFormData {
 interface IWhatIfCutFormProps {
    chartData: IChartItem[] | IExpensesByCategories[];
 };
+
+const words: string[] = ['продукты', 'развлечения', 'подписки', 'мобильную связь', 'косметику']
 
 const WhatIfCutForm: FC<IWhatIfCutFormProps> = ({ chartData }) => {
    const [AIResponse, setAIResponse] = useState<string>('');
@@ -32,7 +35,7 @@ const WhatIfCutForm: FC<IWhatIfCutFormProps> = ({ chartData }) => {
 
    return (
       <Flex vertical align='center' gap='small'>
-         <p>Что если убрать *трату*</p>
+         <div>Что если сократить траты на <Typewriter words={words}/>?</div>
          <Form onFinish={handleSubmit(onSubmit)}>
             <Flex vertical align='center'>
                <Form.Item label='Введите категорию или название'>
