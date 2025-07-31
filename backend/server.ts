@@ -41,38 +41,49 @@ app.post('/upload', async (req: Request, res: Response) => {
 });
 
 app.post('/chat', async (req: Request, res: Response) => {
-   const prompt = req.body.prompt;
-   const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
-
-   if (!prompt) {
-      return res.status(400).json({ error: 'Промпт обязателен' });
-   }
-
    try {
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      const { prompt, expenses } = req.body;
+
+      if (!prompt || !expenses) {
+         return res.status(400).json({ error: 'prompt и expenses обязательны' });
+      }
+
+      const openrouterApiKey = process.env.OPENROUTER_API_KEY;
+      if (!openrouterApiKey) throw new Error('Нет ключа OpenRouter');
+
+      const fullPrompt = `
+         Пользователь предоставил следующие расходы: ${JSON.stringify(expenses, null, 2)}.
+         Запрос пользователя: "${prompt}".
+         Ответь кратко, с конкретными советами.
+      `;
+
+      const aiResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
          method: 'POST',
          headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${OPENROUTER_KEY}`
+            'Authorization': `Bearer ${openrouterApiKey}`
          },
          body: JSON.stringify({
-            model: 'deepseek/deepseek-chat-v3-0324:free',
-            messages: [{ role: 'user', content: prompt }]
+            model: "deepseek/deepseek-chat-v3-0324:free",
+            messages: [
+               { role: "user", content: fullPrompt }
+            ]
          })
       });
 
-      if (!response.ok) {
-         const errorText = await response.text();
-         throw new Error(`Ошибка от OpenRouter: ${errorText}`);
+      if (!aiResponse.ok) {
+         const errorText = await aiResponse.text();
+         throw new Error(`Ошибка от AI API: ${errorText}`);
       }
 
-      const data = await response.json();
-      const answer = data.choices?.[0]?.message?.content;
+      const aiJson = await aiResponse.json();
+      const content = aiJson.choices?.[0]?.message?.content || 'Нет ответа от AI';
 
-      res.json({ answer });
+      res.json({ answer: content });
+
    } 
-   catch (err: any) {
-      res.status(500).json({ error: err.message || 'Ошибка обработки запроса' });
+   catch (e: any) {
+      res.status(500).json({ error: e.message || 'Ошибка AI анализа' });
    }
 });
 
