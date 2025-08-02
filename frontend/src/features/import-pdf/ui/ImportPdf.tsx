@@ -1,5 +1,5 @@
 import { useEffect, useState, type FC } from 'react';
-import { Button, Form, Upload } from 'antd';
+import { Button, Flex, Form, Input, Spin, Upload } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import { Controller, useForm } from 'react-hook-form';
 import { useImportPdf } from '../model/useImportPdf';
@@ -7,9 +7,11 @@ import ChartExports from '../../../shared/context/ChartContext';
 import type { IExpenseItem } from '../../../shared/types/expenses';
 import type { IChartItem } from '../../../shared/types/charts';
 import { defineCategory } from '../../../shared/lib/defineCategory';
+
 const { useChartContext } = ChartExports;
 
 interface IFormValues {
+   chartName: string;
    pdfFile: File | null;
 };
 
@@ -27,7 +29,7 @@ const ImportPdf: FC = () => {
    }, [isLoading]);
 
    const onSubmit = async (data: IFormValues): Promise<void> => {
-      if (!data.pdfFile) return;
+      if (!data.pdfFile || !data.chartName) return;
 
       setIsLoading(true);
 
@@ -39,7 +41,7 @@ const ImportPdf: FC = () => {
             for (const item of expenseItems) {
                expenseItemsWithCategories.push({ ...item, category: defineCategory(item.title) });
             }
-            addChart(expenseItemsWithCategories);
+            addChart(expenseItemsWithCategories, data.chartName);
          },
          onError: () => setIsSuccess(false),
          onSettled: () => setIsLoading(false)
@@ -59,8 +61,13 @@ const ImportPdf: FC = () => {
    }
 
    return (
-      <div>
+      <Flex vertical>
+         <h2>Создание новой диаграммы</h2>
+         <h3>Импортируйте .pdf файл с выпиской из банка за месяц</h3>
          <Form action='#' onFinish={handleSubmit(onSubmit)}>
+            <Form.Item label='Название новой диаграммы'>
+               <Controller name='chartName' control={control} rules={{ required: 'Пожалуйста, введите название новой диаграммы' }} render={({ field }) => <Input {...field} disabled={isLoading} /> } />
+            </Form.Item>
             <Form.Item label='Файл с выпиской из банка (*.pdf)'>
                <Controller name='pdfFile' control={control} rules={{ required: 'Пожалуйста, прикрепите PDF файл' }} render={({ field: { onChange, value, ...restField } }) => (
                   <Upload.Dragger 
@@ -69,7 +76,9 @@ const ImportPdf: FC = () => {
                      beforeUpload={(file) => handleBeforeUpload(file, onChange)}
                      fileList={value ? [value as any] : []}
                      onRemove={() => onChange(null)}
-                     accept='.pdf'>
+                     accept='.pdf'
+                     disabled={isLoading}
+                  >
                      <p className="ant-upload-drag-icon">
                         <InboxOutlined />
                      </p>
@@ -78,12 +87,12 @@ const ImportPdf: FC = () => {
                   </Upload.Dragger>
                )} />
             </Form.Item>
-            <Button htmlType='submit'>Отправить</Button>
+            <Button htmlType='submit' disabled={isLoading}>Отправить</Button>
          </Form>
-         {isLoading && <p>Загрузка</p>}
+         {isLoading && <Spin />}
          {isSuccess && <span>Файл успешно загружен</span>}
          {isSuccess === false && <span>Произошла ошибка при загрузке файла</span>}
-      </div>
+      </Flex>
    )
 }
 
