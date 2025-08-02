@@ -2,6 +2,7 @@ import type { IExpensesByCategories } from "./expenses";
 
 export interface IChartSlot {
    id: number;
+   name: string | null;
    data: IChartItem[] | null;
    categorizedData?: IExpensesByCategories[] | null;
 }
