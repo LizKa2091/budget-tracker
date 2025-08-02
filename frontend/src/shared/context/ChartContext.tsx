@@ -7,6 +7,7 @@ interface IChartContext {
    charts: IChartSlot[];
    addChart: (slot: IChartItem[], name: string) => void;
    deleteChart: (slotId: number) => void;
+   addSpending: (chartId: number, category: string, date: string, title: string, amount: number) => void;
 };
 
 interface IChartContextProvider {
@@ -64,8 +65,19 @@ const ChartContextProvider: FC<IChartContextProvider> = ({ children }) => {
       setCharts((prev) => prev.map(currSlot => currSlot.id === slotId ? {...currSlot, data: null, categorizedData: null, name: null} : currSlot));
    };
 
+   const addSpending = (chartId: number, category: string, date: string, title: string, amount: number) => {
+      setCharts((prev) => {
+         return prev.map(chart => {
+            if (chart.id !== chartId || chart.data === null) return chart;
+
+            const updatedChartData = [...chart.data, { date, title, amount, category }];
+            return { ...chart, data: updatedChartData, categorizedData: categorizeExpenses(updatedChartData) };
+         })
+      })
+   };
+
    return (
-      <ChartContext.Provider value={{ charts, addChart, deleteChart }}>
+      <ChartContext.Provider value={{ charts, addChart, deleteChart, addSpending }}>
          {children}
       </ChartContext.Provider>
    )
