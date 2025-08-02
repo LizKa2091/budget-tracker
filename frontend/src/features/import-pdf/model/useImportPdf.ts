@@ -3,12 +3,12 @@ import { extractExpFromJson } from "../../../shared/lib/extractExpFromJson";
 import { type IExpenseItem } from "../../../shared/types/expenses";
 
 const importPdf = async (pdfFile: File): Promise<IExpenseItem[]> => {
+   const formData = new FormData();
+   formData.append('file', pdfFile);
+
    const response = await fetch('http://localhost:4000/upload', {
       method: 'POST',
-      headers: {
-         'Content-Type': 'application/json'
-      },
-      body: pdfFile
+      body: formData
    });
 
    if (!response.ok) throw new Error('ошибка сервера');

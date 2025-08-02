@@ -5,7 +5,7 @@ import type { IExpensesByCategories } from "../types/expenses";
 
 interface IChartContext {
    charts: IChartSlot[];
-   addChart: (slot: IChartItem[]) => void;
+   addChart: (slot: IChartItem[], name: string) => void;
    deleteChart: (slotId: number) => void;
 };
 
@@ -18,10 +18,10 @@ const ChartContext = createContext<IChartContext | undefined>(undefined);
 const ChartContextProvider: FC<IChartContextProvider> = ({ children }) => {
    const [isInitialized, setIsInitialized] = useState<boolean>(false);
    const [charts, setCharts] = useState<IChartSlot[]>([
-      { id: 1, data: null },
-      { id: 2, data: null },
-      { id: 3, data: null },
-      { id: 4, data: null }
+      { id: 1, name: null, data: null },
+      { id: 2, name: null, data: null },
+      { id: 3, name: null, data: null },
+      { id: 4, name: null, data: null }
    ]);
 
    useEffect(() => {
@@ -40,7 +40,7 @@ const ChartContextProvider: FC<IChartContextProvider> = ({ children }) => {
       }
    }, [charts, isInitialized]);
 
-   const addChart = (newSlotData: IChartItem[]): void => {
+   const addChart = (newSlotData: IChartItem[], chartName: string): void => {
       const categorizedSlotData: IExpensesByCategories[] | null = categorizeExpenses(newSlotData);
 
       setCharts((prev) => {
@@ -48,12 +48,12 @@ const ChartContextProvider: FC<IChartContextProvider> = ({ children }) => {
 
          if (emptyDataIndex !== -1) {
             const updatedCharts: IChartSlot[] = [...prev];
-            updatedCharts[emptyDataIndex] = { ...updatedCharts[emptyDataIndex], data: newSlotData, categorizedData: categorizedSlotData };
+            updatedCharts[emptyDataIndex] = { ...updatedCharts[emptyDataIndex], data: newSlotData, categorizedData: categorizedSlotData, name: chartName };
 
             return updatedCharts;
          }
          
-         const shiftedCharts = [...prev.slice(1), { ...prev[3], data: newSlotData, categorizedData: categorizedSlotData }];
+         const shiftedCharts = [...prev.slice(1), { ...prev[3], data: newSlotData, categorizedData: categorizedSlotData, name: chartName }];
          return shiftedCharts;
       })
    };
@@ -61,7 +61,7 @@ const ChartContextProvider: FC<IChartContextProvider> = ({ children }) => {
    const deleteChart = (slotId: number): void => {
       if (slotId > 4 || slotId < 0) return;
 
-      setCharts((prev) => prev.map(currSlot => currSlot.id === slotId ? {...currSlot, data: null} : currSlot));
+      setCharts((prev) => prev.map(currSlot => currSlot.id === slotId ? {...currSlot, data: null, categorizedData: null, name: null} : currSlot));
    };
 
    return (
