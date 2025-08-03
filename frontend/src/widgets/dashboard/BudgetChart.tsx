@@ -7,6 +7,7 @@ import { getRandomColor } from '../../shared/lib/getRandomColor';
 import { Button, Flex } from 'antd';
 import styles from './BudgetChart.module.scss';
 import BudgetSimulator from '../budget-simulator/ui/BudgetSimulator';
+import AddExpenseForm from '../../features/add-expense/ui/AddExpenseForm';
 
 const { useChartContext } = ChartExports;
 
@@ -93,6 +94,7 @@ const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode }) => {
             </PieChart>
          </ResponsiveContainer>
          <Flex vertical gap='large' align='center'>
+            <AddExpenseForm chartId={chartId} />
             <BudgetSimulator chartData={chartData} />
             <p>Масштаб</p>
             <Flex vertical gap='small'>
