@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, type FC, type ReactNode
 import type { IChartSlot, IChartItem } from "../types/charts";
 import { categorizeExpenses } from "../lib/categorizeExpenses";
 import type { IExpensesByCategories } from "../types/expenses";
+import { categoryKeywords } from "../lib/categoryKeywords";
 
 interface IChartContext {
    charts: IChartSlot[];
@@ -18,6 +19,7 @@ const ChartContext = createContext<IChartContext | undefined>(undefined);
 
 const ChartContextProvider: FC<IChartContextProvider> = ({ children }) => {
    const [isInitialized, setIsInitialized] = useState<boolean>(false);
+   const [userCategories, setUserCategories] = useState<Record<string, string[]>>({});
    const [charts, setCharts] = useState<IChartSlot[]>([
       { id: 1, name: null, data: null },
       { id: 2, name: null, data: null },
@@ -26,10 +28,14 @@ const ChartContextProvider: FC<IChartContextProvider> = ({ children }) => {
    ]);
 
    useEffect(() => {
-      const savedCharts = localStorage.getItem('charts');
+      const savedCharts: string | null = localStorage.getItem('charts');
+      const savedCategories: string | null = localStorage.getItem('userCategories');
 
       if (savedCharts) {
          setCharts(JSON.parse(savedCharts));
+      }
+      if (savedCategories) {
+         setUserCategories(JSON.parse(savedCategories));
       }
 
       setIsInitialized(true);
@@ -38,11 +44,12 @@ const ChartContextProvider: FC<IChartContextProvider> = ({ children }) => {
    useEffect(() => {
       if (isInitialized) {
          localStorage.setItem('charts', JSON.stringify(charts));
+         localStorage.setItem('userCategories', JSON.stringify(userCategories));
       }
-   }, [charts, isInitialized]);
+   }, [charts, userCategories, isInitialized]);
 
    const addChart = (newSlotData: IChartItem[], chartName: string): void => {
-      const categorizedSlotData: IExpensesByCategories[] | null = categorizeExpenses(newSlotData);
+      const categorizedSlotData: IExpensesByCategories[] | null = categorizeExpenses(newSlotData, userCategories);
 
       setCharts((prev) => {
          const emptyDataIndex = prev.findIndex(slot => slot.data === null);
@@ -71,9 +78,20 @@ const ChartContextProvider: FC<IChartContextProvider> = ({ children }) => {
             if (chart.id !== chartId || chart.data === null) return chart;
 
             const updatedChartData = [...chart.data, { date, title, amount, category }];
-            return { ...chart, data: updatedChartData, categorizedData: categorizeExpenses(updatedChartData) };
+            return { ...chart, data: updatedChartData, categorizedData: categorizeExpenses(updatedChartData, userCategories) };
          })
-      })
+      });
+
+      const newCategory = category.trim().toLowerCase();
+
+      const isExistingCategory = Object.keys(categoryKeywords).some(category => category.toLowerCase() === newCategory);
+      const isUserCategory = Object.keys(userCategories).some(category => category.toLowerCase() === newCategory);
+
+      if (!isExistingCategory && !isUserCategory) {
+         setUserCategories(prev => ({
+            ...prev, [category]: []
+         }));
+      }
    };
 
    return (
