@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from '../pages/HomePage/HomePage';
 import DashBoardPage from '../pages/DashBoardPage';
 import ImportPdfPage from '../pages/ImportPdfPage';
-import ChartSlots from '../features/chart-slots/ChartSlots';
+import ChartSlotsPage from '../pages/ChartSlotsPage/ChartSlotsPage';
 
 const Router: FC = () => {
    return (
@@ -11,7 +11,7 @@ const Router: FC = () => {
          <Routes>
             <Route path='/' element={<HomePage />} />
             <Route path='/import-pdf' element={<ImportPdfPage />} />
-            <Route path='/dashboard' element={<ChartSlots />} />
+            <Route path='/dashboard' element={<ChartSlotsPage />} />
             <Route path='/dashboard/:id' element={<DashBoardPage />} />
          </Routes>
       </BrowserRouter>
