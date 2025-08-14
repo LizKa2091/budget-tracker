@@ -4,7 +4,7 @@ import { type IExpenseItem } from "../../../shared/types/expenses";
 
 const importPdf = async (pdfFile: File): Promise<IExpenseItem[]> => {
    const formData = new FormData();
-   formData.append('file', pdfFile);
+   formData.append('pdfFile', pdfFile);
 
    const response = await fetch('http://localhost:4000/upload', {
       method: 'POST',
