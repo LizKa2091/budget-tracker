@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
    res.send('Server is running. Use POST /upload to process PDF.');
 });
 
-app.post('/upload', async (req: Request, res: Response) => {
+app.post('/upload', upload.single('pdfFile'), async (req: Request, res: Response) => {
    try {
       if (!req.file) {
          return res.status(400).json({ error: 'Файл не передан' });
@@ -34,8 +34,7 @@ app.post('/upload', async (req: Request, res: Response) => {
       const presignedData = await getPresignedUrl(API_KEY, fileName);
 
       await uploadFile(uploadedFilePath, presignedData.uploadUrl);
-
-      const resultUrl = await convertPdfToJson(API_KEY, presignedData.fileUrl, '', '', DESTINATION_FILE);
+      await convertPdfToJson(API_KEY, presignedData.fileUrl, '', '', DESTINATION_FILE);
 
       const resultJson = fs.readFileSync(DESTINATION_FILE, 'utf8');
       const parsedResult = JSON.parse(resultJson);
@@ -44,6 +43,7 @@ app.post('/upload', async (req: Request, res: Response) => {
 
       res.json({ message: 'Файл успешно распознан', result: parsedResult });
    } catch (e: any) {
+      console.error(e);
       res.status(500).json({ error: e.message || 'unknown error' });
    }
 });
