@@ -24,10 +24,10 @@ const ChartSlots: FC = () => {
 
    if (savedCharts.length === 0) {
       return (
-         <>
+         <Flex vertical gap='large'>
             <h2>У вас пока нет сохранённых диаграмм</h2>
             <Link to='/import-pdf'>Импортировать выписку за месяц в pdf формате</Link>
-         </>
+         </Flex>
       );
    }
 
