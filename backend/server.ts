@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import https from 'https';
 import dotenv from 'dotenv';
+import multer from 'multer';
 
 dotenv.config();
 
@@ -11,9 +12,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const upload = multer({ dest: path.resolve(__dirname, 'uploads') });
+
 const API_KEY = process.env.PDFCO_API_KEY ?? '';
 
-const UPLOAD_FILE_PATH = path.resolve(__dirname, 'uploads', 'test.pdf');
 const DESTINATION_FILE = path.resolve(__dirname, 'uploads', 'result.json');
 
 app.get('/', (req, res) => {
@@ -22,17 +24,23 @@ app.get('/', (req, res) => {
 
 app.post('/upload', async (req: Request, res: Response) => {
    try {
-      // 1. Получаем presigned URL
-      const presignedData = await getPresignedUrl(API_KEY, UPLOAD_FILE_PATH);
+      if (!req.file) {
+         return res.status(400).json({ error: 'Файл не передан' });
+      }
 
-      // 2. Загружаем файл по presigned URL
-      await uploadFile(UPLOAD_FILE_PATH, presignedData.uploadUrl);
+      const uploadedFilePath = req.file.path;
+      const fileName = req.file.originalname;
 
-      // 3. Запускаем конвертацию PDF в JSON
+      const presignedData = await getPresignedUrl(API_KEY, fileName);
+
+      await uploadFile(uploadedFilePath, presignedData.uploadUrl);
+
       const resultUrl = await convertPdfToJson(API_KEY, presignedData.fileUrl, '', '', DESTINATION_FILE);
 
       const resultJson = fs.readFileSync(DESTINATION_FILE, 'utf8');
       const parsedResult = JSON.parse(resultJson);
+
+      fs.unlink(uploadedFilePath, () => {});
 
       res.json({ message: 'Файл успешно распознан', result: parsedResult });
    } catch (e: any) {
@@ -91,9 +99,8 @@ app.listen(4000, () => {
   console.log('Server running on http://localhost:4000');
 });
 
-function getPresignedUrl(apiKey: string, localFilePath: string): Promise<{ uploadUrl: string; fileUrl: string }> {
+function getPresignedUrl(apiKey: string, fileName: string): Promise<{ uploadUrl: string; fileUrl: string }> {
    return new Promise((resolve, reject) => {
-      const fileName = path.basename(localFilePath);
       const queryPath = `/v1/file/upload/get-presigned-url?contenttype=application/octet-stream&name=${encodeURIComponent(fileName)}`;
       const options = {
          host: 'api.pdf.co',
