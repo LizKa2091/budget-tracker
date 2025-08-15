@@ -2,3 +2,13 @@
    background-color: $main-bg;
    padding: 20px 50px;
 }
+.info {
+   max-width: 600px;
+}
+.card {
+   width: 240px;
+
+   &Title {
+      font-size: 1rem;
+   }
+}
