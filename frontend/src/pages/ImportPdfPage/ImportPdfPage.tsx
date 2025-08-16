@@ -1,22 +1,22 @@
-import { Layout, Flex } from 'antd';
-import { type FC } from 'react'
-import styles from './ChartSlotsPage.module.scss';
-import ChartSlots from '../../features/chart-slots/ChartSlots';
+import { type FC } from 'react';
+import ImportPdf from '../../features/import-pdf/ui/ImportPdf';
 import HeaderBar from '../../widgets/header-bar/HeaderBar';
+import { Flex, Layout } from 'antd';
+import styles from './ImportPdfPage.module.scss';
 
 const { Content } = Layout;
 
-const ChartSlotsPage: FC = () => {
+const ImportPdfPage: FC = () => {
    return (
       <Layout>
          <HeaderBar />
          <Content>
             <Flex className={styles.container}>
-               <ChartSlots />
+               <ImportPdf />
             </Flex>
          </Content>
       </Layout>
    )
 }
 
-export default ChartSlotsPage;
+export default ImportPdfPage;
