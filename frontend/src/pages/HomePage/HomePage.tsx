@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import ChartExports from '../../shared/context/ChartContext';
 import styles from './HomePage.module.scss';
 import type { IChartSlot } from '../../shared/types/charts';
+import HeaderBar from '../../widgets/header-bar/HeaderBar';
 
 const { Content } = Layout;
 const { useChartContext } = ChartExports;
@@ -28,6 +29,7 @@ const HomePage: FC = () => {
 
    return (
       <Layout>
+         <HeaderBar />
          <Content className={styles.container}>
             <Flex vertical align='center' gap='large'>
                <h2>Добро пожаловать в Budget Tracker</h2>

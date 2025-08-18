@@ -14,12 +14,13 @@ const { useChartContext } = ChartExports;
 interface IBudgetChartProps {
    chartId: number;
    displayMode: ChartMode;
+   categoriesToShow: string[] | null;
 };
 
 const maxRadiusSize: number = 500;
 const minRadiusSize: number = 150;
 
-const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode }) => {
+const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode, categoriesToShow }) => {
    const [chartData, setChartData] = useState<IChartItem[] | IExpensesByCategories[] | null>(null);
    const [itemColors, setItemColors] = useState<string[]>([]);
    const [currRadius, setCurrRadius] = useState<number>(150);
@@ -27,21 +28,23 @@ const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode }) => {
    const { charts } = useChartContext();
 
    useEffect(() => {      
-      if (displayMode === 'categories') {
-         const categorizedItems: IExpensesByCategories[] | null = charts[chartId-1].categorizedData || null;
-         setChartData(categorizedItems);
+      let categorizedItems: IExpensesByCategories[] | IChartItem[] | null;
 
+      if (displayMode === 'categories') {
+         categorizedItems = categoriesToShow && categoriesToShow.length > 0 ? 
+            charts[chartId-1].categorizedData?.filter(item => categoriesToShow.includes(item.category)) || null
+            : charts[chartId-1].categorizedData || null;
+         
          const colors: string[] = [];
          categorizedItems?.forEach(() => colors.push(getRandomColor()));
-
          setItemColors(colors);
       }
-
       else {
-         setChartData(charts[chartId-1].data || null);
+         categorizedItems = charts[chartId-1].data || null;
          setItemColors([]);
-      };
-   }, [chartId, charts, displayMode]);
+      }
+      setChartData(categorizedItems);
+   }, [chartId, charts, displayMode, categoriesToShow]);
 
    const pieData = useMemo(() => {
       if (!chartData) return [];
@@ -74,7 +77,7 @@ const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode }) => {
    }
 
    return (
-      <div className={styles.container}>
+      <Flex align='center' className={styles.container}>
          <ResponsiveContainer width='80%' height='100%'>
             <PieChart>
                <Pie 
@@ -102,7 +105,7 @@ const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode }) => {
                <Button onClick={() => handleChangeRadius('-')} type='default'>- Уменьшить</Button>
             </Flex>
          </Flex>
-      </div>
+      </Flex>
    )
 }
 
