@@ -28,21 +28,23 @@ const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode, categoriesTo
    const { charts } = useChartContext();
 
    useEffect(() => {      
-      if (displayMode === 'categories') {
-         const categorizedItems: IExpensesByCategories[] | null = charts[chartId-1].categorizedData || null;
-         setChartData(categorizedItems);
+      let categorizedItems: IExpensesByCategories[] | IChartItem[] | null;
 
+      if (displayMode === 'categories') {
+         categorizedItems = categoriesToShow && categoriesToShow.length > 0 ? 
+            charts[chartId-1].categorizedData?.filter(item => categoriesToShow.includes(item.category)) || null
+            : charts[chartId-1].categorizedData || null;
+         
          const colors: string[] = [];
          categorizedItems?.forEach(() => colors.push(getRandomColor()));
-
          setItemColors(colors);
       }
-
       else {
-         setChartData(charts[chartId-1].data || null);
+         categorizedItems = charts[chartId-1].data || null;
          setItemColors([]);
-      };
-   }, [chartId, charts, displayMode]);
+      }
+      setChartData(categorizedItems);
+   }, [chartId, charts, displayMode, categoriesToShow]);
 
    const pieData = useMemo(() => {
       if (!chartData) return [];
