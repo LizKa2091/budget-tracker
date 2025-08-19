@@ -1,0 +1,16 @@
+@import './themes';
+
+#root {
+   background-color: var(--bg-color);
+   color: var(--text-color);
+   transition: background-color 0.3s ease-in, color 0.3s ease-in;
+   min-height: 100dvh;
+}
+.ant-layout, .ant-layout-content, .ant-layout-header, .ant-menu, .ant-menu-title-content, .ant-card, .ant-card-actions, .ant-card-actions a,
+.ant-statistic-title, .ant-statistic-content, .ant-btn, .ant-card-head-title, .ant-form-item-label label, .ant-upload-text, .ant-upload-hint,
+.ant-input, .ant-segmented, .ant-checkbox-label, .ant-picker, .ant-picker-panel, .ant-picker-header-view, .ant-picker-footer,
+.ant-picker-now-btn, .ant-input-number, .ant-input-number-button, p {
+   background-color: var(--bg-color) !important;
+   color: var(--text-color) !important;
+   border-color: var(--text-color) !important;
+}

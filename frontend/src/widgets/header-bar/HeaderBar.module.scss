@@ -1,13 +1,13 @@
 .container {
-    display: flex;
-    background-color: #F8F9FA;
-    border-bottom: 1px solid $header-border;
+   display: flex;
+   background-color: #F8F9FA;
+   border-bottom: 1px solid $header-border;
 
-    h1 {
-        color: $title;
-        width: 25%;
-    }
+   h1 {
+      color: $title;
+      width: 25%;
+   }
 }
 .menu {
-    width: 75%;
+   width: 75%;
 }
