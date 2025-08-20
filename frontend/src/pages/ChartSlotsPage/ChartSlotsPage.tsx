@@ -1,6 +1,5 @@
 import { Layout, Flex } from 'antd';
 import { type FC } from 'react'
-import styles from './ChartSlotsPage.module.scss';
 import ChartSlots from '../../features/chart-slots/ChartSlots';
 import HeaderBar from '../../widgets/header-bar/HeaderBar';
 
@@ -11,7 +10,7 @@ const ChartSlotsPage: FC = () => {
       <Layout>
          <HeaderBar />
          <Content>
-            <Flex className={styles.container}>
+            <Flex className='container'>
                <ChartSlots />
             </Flex>
          </Content>

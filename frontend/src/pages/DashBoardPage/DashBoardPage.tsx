@@ -6,7 +6,6 @@ import ChartModeSwitcher from '../../features/chart-mode-switcher/ui/ChartModeSw
 import { Flex, Layout } from 'antd';
 import HeaderBar from '../../widgets/header-bar/HeaderBar';
 import ChartExports from '../../shared/context/ChartContext';
-import styles from './DashBoardPage.module.scss';
 import type { IExpensesByCategories } from '../../shared/types/expenses';
 
 const { Content } = Layout;
@@ -43,7 +42,7 @@ const DashBoardPage: FC = () => {
       <Layout>
          <HeaderBar />
          <Content>
-            <Flex className={styles.container}>
+            <Flex className='container'>
                {!paramsId || Number(paramsId) > 4 || Number(paramsId) < 1 ? (
                   <span>Неверный id диаграммы</span>
                ) : (
