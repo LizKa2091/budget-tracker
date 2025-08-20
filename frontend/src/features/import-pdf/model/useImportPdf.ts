@@ -1,21 +1,20 @@
 import { useMutation } from "@tanstack/react-query";
 import { extractExpFromJson } from "../../../shared/lib/extractExpFromJson";
 import { type IExpenseItem } from "../../../shared/types/expenses";
+import axios from "axios";
 
 const importPdf = async (pdfFile: File): Promise<IExpenseItem[]> => {
    const formData = new FormData();
    formData.append('pdfFile', pdfFile);
+   console.log('pdfFile', pdfFile);
 
-   const response = await fetch('http://localhost:4000/upload', {
-      method: 'POST',
-      body: formData
-   });
 
-   if (!response.ok) throw new Error('ошибка сервера');
+   const { data } = await axios.post<IExpenseItem[]>('http://localhost:4000/upload', 
+      formData
+   );
+   console.log('data was outp', data)
 
-   const result = await response.json();
-   
-   return extractExpFromJson(result);
+   return extractExpFromJson(data);
 };
 
 export const useImportPdf = () => {
