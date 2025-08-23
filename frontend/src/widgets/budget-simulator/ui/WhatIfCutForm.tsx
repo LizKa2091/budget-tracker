@@ -5,6 +5,7 @@ import { useAIAdvice } from '../model/useAIAdvice';
 import type { IChartItem } from '../../../shared/types/charts';
 import type { IExpensesByCategories } from '../../../shared/types/expenses';
 import Typewriter from './Typewriter';
+import styles from './WhatIfCutForm.module.scss';
 
 interface ICutFormData {
    value?: string;
@@ -37,12 +38,12 @@ const WhatIfCutForm: FC<IWhatIfCutFormProps> = ({ chartData }) => {
       <Flex vertical align='center' gap='small'>
          <div>Что если сократить траты на <Typewriter words={words}/>?</div>
          <Form onFinish={handleSubmit(onSubmit)}>
-            <Flex vertical align='center'>
+            <Flex vertical align='center' gap='middle'>
                <Form.Item label='Введите категорию или название'>
                   <Controller name='value' control={control} render={({ field }) => <Input {...field} />} />
                </Form.Item>
                <Button htmlType='submit' type='default'>Представить</Button>
-               {AIResponse && <p>{AIResponse}</p>}
+               {AIResponse && <p className={styles.response}>{AIResponse}</p>}
                {error && <p>Ошибка: {error.message}</p>}
             </Flex>
          </Form>

@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import type { IExpensesByCategories } from "../../../shared/types/expenses";
 import type { IChartItem } from "../../../shared/types/charts";
+import axios from "axios";
 
 interface IAIResponse {
    answer: string;
@@ -25,17 +26,11 @@ const getAIAdvice = async ({ promptType, value = 'в целом', expenses }: IA
       prompt += setGoalPattern + value + ' рублей';
    }
    
-   const response = await fetch('http://localhost:4000/chat', {
-      method: 'POST',
-      headers: {
-         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ prompt, expenses })
+   const { data } = await axios.post<IAIResponse>('http://localhost:4000/chat', {
+      prompt: prompt, expenses: expenses
    });
 
-   if (!response.ok) throw new Error('ошибка при получении ответа');
-
-   return await response.json();
+   return data;
 };
 
 export const useAIAdvice = () => {

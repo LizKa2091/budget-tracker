@@ -1,4 +1,4 @@
-@import './themes';
+@use './themes';
 
 #root {
    background-color: var(--bg-color);
@@ -12,16 +12,25 @@
 .ant-layout-content {
    position: relative;
 }
+.container {
+   padding: 20px 50px;
+}
 .centered {
    position: absolute;
    top: 50%;
    left: 50%;
    transform: translate(-50%, -50%);
 }
+.success-response {
+   color: $success-response;
+}
+.failed-response {
+   color: $failed-response;
+}
 .ant-layout, .ant-layout-content, .ant-layout-header, .ant-menu, .ant-menu-title-content, .ant-card, .ant-card-actions, .ant-card-actions a,
 .ant-statistic-title, .ant-statistic-content, .ant-btn, .ant-card-head-title, .ant-form-item-label label, .ant-upload-text, .ant-upload-hint,
 .ant-input, .ant-segmented, .ant-checkbox-label, .ant-picker, .ant-picker-panel, .ant-picker-header-view, .ant-picker-footer,
-.ant-picker-now-btn, .ant-input-number, .ant-input-number-button, p {
+.ant-picker-now-btn, .ant-input-number, .ant-input-number-button, p, .ant-upload-list-item-name, .ant-upload-icon span {
    background-color: var(--bg-color) !important;
    color: var(--text-color) !important;
    border-color: var(--text-color) !important;

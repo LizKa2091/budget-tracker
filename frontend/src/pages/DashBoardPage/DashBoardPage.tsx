@@ -1,4 +1,4 @@
-import { useEffect, useState, type FC } from 'react'
+import { useEffect, useMemo, useState, type FC } from 'react'
 import BudgetChart from '../../widgets/dashboard/BudgetChart';
 import { useParams } from 'react-router-dom';
 import { type ChartMode, type IChartSlot } from '../../shared/types/charts';
@@ -6,8 +6,7 @@ import ChartModeSwitcher from '../../features/chart-mode-switcher/ui/ChartModeSw
 import { Flex, Layout } from 'antd';
 import HeaderBar from '../../widgets/header-bar/HeaderBar';
 import ChartExports from '../../shared/context/ChartContext';
-import styles from './DashBoardPage.module.scss';
-import type { IExpensesByCategories } from '../../shared/types/expenses';
+import { getCategoriesFromChart } from '../../shared/lib/getCategoriesFromChart';
 
 const { Content } = Layout;
 const { useChartContext } = ChartExports;
@@ -20,36 +19,42 @@ const DashBoardPage: FC = () => {
    const { charts } = useChartContext();
    const paramsId: string | undefined = useParams().id;
 
-   useEffect(() => {
-      if (paramsId) {
-         const currChart: IChartSlot | undefined = charts.find((chart: IChartSlot) => chart.id === +paramsId);
+   const currChart: IChartSlot | undefined = useMemo(() => {
+      if (!paramsId) return undefined;
 
-         if (currChart) {
-            const allCategories: string[] = [];
-            const currCategorizedData: IExpensesByCategories[] | null | undefined = currChart.categorizedData;
-
-            if (currCategorizedData) {
-               for (const item of currCategorizedData) {
-                  if (!allCategories.includes(item.category)) allCategories.push(item.category);
-               }
-            }
-            setAllCategories(allCategories);
-            setCategoriesToShow(allCategories);
-         }
-      }
+      return charts.find((chart: IChartSlot) => chart.id === +paramsId);
    }, [paramsId, charts]);
+
+   useEffect(() => {
+      if (currChart) {
+         const categories = getCategoriesFromChart(currChart);
+         
+         setAllCategories(categories);
+         setCategoriesToShow(categories);
+      }
+   }, [currChart]);
+
+   const isInvalidId = !paramsId || Number(paramsId) > 4 || Number(paramsId) < 1;
 
    return (
       <Layout>
          <HeaderBar />
          <Content>
-            <Flex className={styles.container}>
-               {!paramsId || Number(paramsId) > 4 || Number(paramsId) < 1 ? (
+            <Flex className='container'>
+               {isInvalidId ? (
                   <span>Неверный id диаграммы</span>
                ) : (
                   <>
-                     <ChartModeSwitcher displayMode={displayMode} setDisplayMode={setDisplayMode} allCategories={allCategories} categoriesToShow={categoriesToShow} setCategoriesToShow={setCategoriesToShow}/>
-                     <BudgetChart chartId={+paramsId} displayMode={displayMode} categoriesToShow={categoriesToShow} />
+                     <ChartModeSwitcher 
+                        displayMode={displayMode} setDisplayMode={setDisplayMode}
+                        allCategories={allCategories} 
+                        categoriesToShow={categoriesToShow} setCategoriesToShow={setCategoriesToShow}
+                     />
+                     <BudgetChart 
+                        chartId={+paramsId} 
+                        displayMode={displayMode} 
+                        categoriesToShow={categoriesToShow} 
+                     />
                   </>
                )}
             </Flex>
