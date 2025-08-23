@@ -7,11 +7,12 @@ interface IImportPdfFormProps {
    handleSubmit: () => void;
    control: Control<IFormValues>;
    errors: FieldErrors<IFormValues>;
-   isLoading: boolean;
+   isPending: boolean;
    isSuccess: boolean | null;
+   message: string;
 }
 
-const ImportPdfForm: FC<IImportPdfFormProps> = ({ handleSubmit, control, errors, isLoading, isSuccess }) => {
+const ImportPdfForm: FC<IImportPdfFormProps> = ({ handleSubmit, control, errors, isPending, isSuccess, message }) => {
    const handleBeforeUpload = (file: File, onChange: (file: File | null) => void) => {
       const isPdf = file.type === 'application/pdf';
 
@@ -34,7 +35,7 @@ const ImportPdfForm: FC<IImportPdfFormProps> = ({ handleSubmit, control, errors,
                   control={control} 
                   rules={{ required: 'Пожалуйста, укажите название', minLength: { value: 2, message: 'Минимальная длина 2 символа' } }} 
                   render={({ field }) => 
-                     <Input {...field} disabled={isLoading} /> } 
+                     <Input {...field} disabled={isPending} /> } 
                />
             </Form.Item>
             <Form.Item label='Файл с выпиской из банка (*.pdf)' required validateStatus={errors.pdfFile ? 'error' : ''} help={errors.pdfFile?.message}>
@@ -51,7 +52,7 @@ const ImportPdfForm: FC<IImportPdfFormProps> = ({ handleSubmit, control, errors,
                         fileList={value ? [{ uid: "-1", name: value.name, status: "done" }] : []}
                         onRemove={() => onChange(null)}
                         accept='.pdf'
-                        disabled={isLoading}
+                        disabled={isPending}
                      >
                         <p className="ant-upload-text">Нажмите или перетащите файл в эту область для загрузки</p>
                         <p className="ant-upload-hint">Поддерживается только PDF формат</p>
@@ -60,12 +61,12 @@ const ImportPdfForm: FC<IImportPdfFormProps> = ({ handleSubmit, control, errors,
                } />
             </Form.Item>
             <Flex justify='center'>
-               <Button htmlType='submit' disabled={isLoading}>Отправить</Button>
+               <Button htmlType='submit' disabled={isPending}>Отправить</Button>
             </Flex>
          </Form>
-         {isLoading && <Spin />}
-         {isSuccess && <span className='success-response'>Файл успешно загружен</span>}
-         {isSuccess === false && <span className='failed-response'>Произошла ошибка при загрузке файла</span>}
+         {isPending && <Spin />}
+         {isSuccess && <span className='success-response'>{message}</span>}
+         {isSuccess === false && <span className='failed-response'>{message}</span>}
       </Flex>
    )
 }
