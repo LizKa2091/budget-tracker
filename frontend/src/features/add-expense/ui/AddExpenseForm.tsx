@@ -1,3 +1,4 @@
+import { Dayjs } from 'dayjs';
 import { type FC } from 'react';
 import { Button, DatePicker, Flex, Form, Input, InputNumber } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
@@ -6,7 +7,7 @@ import { useChartStore } from '../../../shared/store-hooks/useChartStore';
 interface IFormData {
    chartId: number;
    category: string;
-   date: string;
+   date: Dayjs;
    title: string;
    amount: number;
 };
@@ -20,7 +21,13 @@ const AddExpenseForm: FC<IAddExpenseFormProps> = ({ chartId }) => {
    const { addExpense } = useChartStore();
 
    const onSubmit = (formData: IFormData) => {
-      addExpense({ chartId, category: formData.category, date: formData.date, title: formData.title, amount: formData.amount});
+      addExpense({ 
+         chartId, 
+         category: formData.category, 
+         date: formData.date ? formData.date.toISOString() : new Date().toISOString(), 
+         title: formData.title, 
+         amount: formData.amount
+      });
    };
 
    const onFinish = async (): Promise<void> => {
