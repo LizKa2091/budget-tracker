@@ -12,6 +12,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.83.0",
     "antd": "^5.26.6",
+    "dayjs": "^1.11.18",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.60.0",
