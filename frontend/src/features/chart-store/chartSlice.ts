@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { categorizeExpenses } from "../../shared/lib/categorizeExpenses";
 import type { IChartItem, IChartSlot } from '../../shared/types/charts';
 import type { IExpensesByCategories } from "../../shared/types/expenses";
@@ -31,6 +31,14 @@ interface IAddChartThunkResponse {
    categorizedData: IExpensesByCategories[] | null;
 };
 
+interface IAddExpensePayload {
+   chartId: number;
+   category: string;
+   date: string;
+   title: string;
+   amount: number;
+};
+
 const chartSlice = createSlice({
    name: 'charts',
    initialState,
@@ -42,7 +50,7 @@ const chartSlice = createSlice({
          state.charts = state.charts.map((slot) => slot.id === slotId ? 
          { ...slotId, data: null, categorizedData: null, name: null } : slot)
       },
-      addExpense(state, action) {
+      addExpense(state, action: PayloadAction<IAddExpensePayload>) {
          const { chartId, category, date, title, amount } = action.payload;
          const chart = state.charts.find((chart) => chart.id === chartId);
 

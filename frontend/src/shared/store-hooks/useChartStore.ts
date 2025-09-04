@@ -12,7 +12,7 @@ export const useChartStore = () => {
       addChart: (newSlotData: IChartItem[], chartName: string) => 
          dispatch(addChartThunk({ newSlotData, chartName })),
       removeChart: (slotId: number) => dispatch(removeChart({ slotId })),
-      addExpense: (payload: { chartId: number; category: string; date: string; title: string; amount: number }) =>
+      addExpense: (payload: { chartId: number, category: string, date: string, title: string, amount: number }) =>
          dispatch(addExpense(payload))
    }
 }
