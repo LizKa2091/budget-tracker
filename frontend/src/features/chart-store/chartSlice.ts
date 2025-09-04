@@ -4,20 +4,25 @@ import type { IChartItem, IChartSlot } from '../../shared/types/charts';
 import type { IExpensesByCategories } from "../../shared/types/expenses";
 import { categoryKeywords } from "../../shared/lib/categoryKeywords";
 import type { RootState } from './index';
+import { saveChartsToStorage } from "../../shared/lib/chartsLocalStorage";
 
 interface IChartState {
    charts: IChartSlot[];
    userCategories: Record<string, string[]>;
 };
 
+const savedCharts = localStorage.getItem('charts');
+const savedCategories = localStorage.getItem('userCategories');
+
 const initialState: IChartState = {
-   charts: [
-      { id: 1, name: null, data: null },
-      { id: 2, name: null, data: null },
-      { id: 3, name: null, data: null },
-      { id: 4, name: null, data: null }
-   ],
-   userCategories: {}
+   charts: savedCharts ? JSON.parse(savedCharts)
+      : [
+         { id: 1, name: null, data: null },
+         { id: 2, name: null, data: null },
+         { id: 3, name: null, data: null },
+         { id: 4, name: null, data: null }
+      ],
+   userCategories: savedCategories ? JSON.parse(savedCategories) : {}
 };
 
 interface IAddChartThunkArgs {
@@ -48,7 +53,9 @@ const chartSlice = createSlice({
          if (slotId > 4 || slotId < 0) return;
 
          state.charts = state.charts.map((slot) => slot.id === slotId ? 
-         { ...slotId, data: null, categorizedData: null, name: null } : slot)
+         { ...slotId, data: null, categorizedData: null, name: null } : slot);
+
+         saveChartsToStorage(state);
       },
       addExpense(state, action: PayloadAction<IAddExpensePayload>) {
          const { chartId, category, date, title, amount } = action.payload;
@@ -68,22 +75,33 @@ const chartSlice = createSlice({
          if (!isExistingCategory && !isUserCategory) {
             state.userCategories[category] = [];
          }
+
+         saveChartsToStorage(state);
       }
    },
    extraReducers: (builder) => {
       builder.addCase(addChartThunk.fulfilled, (state, action) => {
          const { newSlotData, chartName, categorizedData } = action.payload;
+
+         if (!state.charts || !Array.isArray(state.charts)) {
+            state.charts = initialState.charts;
+         }
+
          const emptyDataIndex = state.charts.findIndex((slot) => slot.data === null);
 
          if (emptyDataIndex !== -1) {
-            state.charts[emptyDataIndex] = { ...state.charts[emptyDataIndex], data: newSlotData, categorizedData: categorizedData, name: chartName };
+            state.charts = state.charts.map((slot, index) => {
+               return index === emptyDataIndex ? { ...slot, data: newSlotData, categorizedData, name: chartName } : slot
+            });
          }
          else {
-            const newChart = { id: state.charts[3].id, data: newSlotData, categorizedData: categorizedData, name: chartName };
+            const newChart = { id: state.charts[3]?.id ?? 4, data: newSlotData, categorizedData: categorizedData, name: chartName };
 
-            state.charts.shift();
-            state.charts.push(newChart);
+            state.charts = [...state.charts.slice(1), newChart];
          }
+
+         localStorage.setItem('charts', JSON.stringify(state.charts));
+         localStorage.setItem('userCategories', JSON.stringify(state.userCategories));
       })
    }  
 });
