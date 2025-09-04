@@ -1,16 +1,15 @@
-import { Layout, Flex, Card, Statistic, Divider } from 'antd';
 import { type FC, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import ChartExports from '../../shared/context/ChartContext';
+import { Layout, Flex, Card, Statistic, Divider } from 'antd';
 import type { IChartSlot } from '../../shared/types/charts';
 import HeaderBar from '../../widgets/header-bar/HeaderBar';
+import { useChartStore } from '../../shared/store-hooks/useChartStore';
 import styles from './HomePage.module.scss';
 
 const { Content } = Layout;
-const { useChartContext } = ChartExports;
 
 const HomePage: FC = () => {
-   const { charts } = useChartContext();
+   const { charts } = useChartStore();
 
    const lastChart = useMemo(() => {
       const filtered = charts.filter((chart: IChartSlot) => chart.data && chart.data.length > 0);
@@ -18,7 +17,7 @@ const HomePage: FC = () => {
       return filtered.length > 0 ? filtered[filtered.length - 1] : null;
    }, [charts]);
 
-   const lastChartData = lastChart?.data || [];
+   const lastChartData = useMemo(() => lastChart?.data || [], [lastChart]);
 
    const totalSpent = useMemo(() => lastChartData.reduce((sum, item) => sum + (item.amount || 0), 0), [lastChartData]);
    const biggestExpense = useMemo(() => {

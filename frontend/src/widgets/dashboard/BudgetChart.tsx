@@ -1,15 +1,13 @@
 import { useEffect, useMemo, useState, type FC } from 'react';
+import { Button, Flex } from 'antd';
 import { Pie, PieChart, ResponsiveContainer, Cell, Tooltip } from 'recharts';
-import ChartExports from '../../shared/context/ChartContext';
 import { type ChartMode, type IChartItem } from '../../shared/types/charts';
 import type { IExpensesByCategories } from '../../shared/types/expenses';
 import { getRandomColor } from '../../shared/lib/getRandomColor';
-import { Button, Flex } from 'antd';
-import styles from './BudgetChart.module.scss';
 import BudgetSimulator from '../budget-simulator/ui/BudgetSimulator';
 import AddExpenseForm from '../../features/add-expense/ui/AddExpenseForm';
-
-const { useChartContext } = ChartExports;
+import { useChartStore } from '../../shared/store-hooks/useChartStore';
+import styles from './BudgetChart.module.scss';
 
 interface IBudgetChartProps {
    chartId: number;
@@ -25,7 +23,7 @@ const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode, categoriesTo
    const [itemColors, setItemColors] = useState<string[]>([]);
    const [currRadius, setCurrRadius] = useState<number>(150);
 
-   const { charts } = useChartContext();
+   const { charts } = useChartStore();
 
    useEffect(() => {      
       let categorizedItems: IExpensesByCategories[] | IChartItem[] | null;

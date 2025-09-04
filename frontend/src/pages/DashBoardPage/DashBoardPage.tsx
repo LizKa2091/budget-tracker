@@ -1,22 +1,21 @@
-import { useEffect, useMemo, useState, type FC } from 'react'
-import BudgetChart from '../../widgets/dashboard/BudgetChart';
+import { useEffect, useMemo, useState, type FC } from 'react';
 import { useParams } from 'react-router-dom';
+import { Flex, Layout } from 'antd';
+import BudgetChart from '../../widgets/dashboard/BudgetChart';
 import { type ChartMode, type IChartSlot } from '../../shared/types/charts';
 import ChartModeSwitcher from '../../features/chart-mode-switcher/ui/ChartModeSwitcher';
-import { Flex, Layout } from 'antd';
 import HeaderBar from '../../widgets/header-bar/HeaderBar';
-import ChartExports from '../../shared/context/ChartContext';
 import { getCategoriesFromChart } from '../../shared/lib/getCategoriesFromChart';
+import { useChartStore } from '../../shared/store-hooks/useChartStore';
 
 const { Content } = Layout;
-const { useChartContext } = ChartExports;
 
 const DashBoardPage: FC = () => {
    const [displayMode, setDisplayMode] = useState<ChartMode>('default');
    const [allCategories, setAllCategories] = useState<string[]>([]);
    const [categoriesToShow, setCategoriesToShow] = useState<string[]>([]);
 
-   const { charts } = useChartContext();
+   const { charts } = useChartStore();
    const paramsId: string | undefined = useParams().id;
 
    const currChart: IChartSlot | undefined = useMemo(() => {

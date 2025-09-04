@@ -1,16 +1,13 @@
 import { useEffect, useState, type FC } from 'react'
 import { Link } from 'react-router-dom';
 import type { IChartSlot } from '../../shared/types/charts';
-import ChartExports from '../../shared/context/ChartContext';
 import { Button, Card, Flex } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
-
-const { useChartContext } = ChartExports;
+import { useChartStore } from '../../shared/store-hooks/useChartStore';
 
 const ChartSlots: FC = () => {
    const [savedCharts, setSavedCharts] = useState<IChartSlot[]>([]);
-
-   const { charts, deleteChart } = useChartContext();
+   const { charts, removeChart } = useChartStore();
 
    useEffect(() => {
       const notEmptyCharts: IChartSlot[] = charts.filter(chart => chart.data);
@@ -19,7 +16,7 @@ const ChartSlots: FC = () => {
    }, [charts]);
 
    const handleDelChart = (chartId: number): void => {
-      deleteChart(chartId);
+      removeChart(chartId);
    };
 
    if (savedCharts.length === 0) {

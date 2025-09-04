@@ -1,9 +1,7 @@
 import { type FC } from 'react';
 import { Button, DatePicker, Flex, Form, Input, InputNumber } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
-import ChartExports from '../../../shared/context/ChartContext';
-
-const { useChartContext } = ChartExports;
+import { useChartStore } from '../../../shared/store-hooks/useChartStore';
 
 interface IFormData {
    chartId: number;
@@ -19,10 +17,10 @@ interface IAddExpenseFormProps {
 
 const AddExpenseForm: FC<IAddExpenseFormProps> = ({ chartId }) => {
    const { handleSubmit, control, formState: { errors }, trigger } = useForm<IFormData>();
-   const { addExpense } = useChartContext();
+   const { addExpense } = useChartStore();
 
    const onSubmit = (formData: IFormData) => {
-      addExpense(chartId, formData.category, formData.date, formData.title, formData.amount);
+      addExpense({ chartId, category: formData.category, date: formData.date, title: formData.title, amount: formData.amount});
    };
 
    const onFinish = async (): Promise<void> => {
