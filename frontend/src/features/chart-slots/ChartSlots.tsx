@@ -6,9 +6,10 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { useChartStore } from '../../shared/store-hooks/useChartStore';
 
 const ChartSlots: FC = () => {
-   const { charts = [], removeChart } = useChartStore();
+   const { charts, removeChart } = useChartStore();
+   const chartsArr = Array.isArray(charts) ? charts : [];
 
-   const savedCharts = charts.filter(chart => chart.data && chart.data.length > 0);
+   const savedCharts = chartsArr.filter(chart => chart.data && chart.data.length > 0);
 
    const handleDelChart = (chartId: number): void => {
       removeChart(chartId);

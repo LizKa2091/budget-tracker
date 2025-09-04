@@ -9,10 +9,12 @@ import styles from './HomePage.module.scss';
 const { Content } = Layout;
 
 const HomePage: FC = () => {
-   const { charts = [] } = useChartStore();
+   const { charts } = useChartStore();
 
    const lastChart = useMemo(() => {
-      const filtered = charts.filter((chart: IChartSlot) => chart.data && chart.data.length > 0);
+      const chartsArr = Array.isArray(charts) ? charts : [];
+
+      const filtered = chartsArr.filter((chart: IChartSlot) => chart.data && chart.data.length > 0);
 
       return filtered.length > 0 ? filtered[filtered.length - 1] : null;
    }, [charts]);
