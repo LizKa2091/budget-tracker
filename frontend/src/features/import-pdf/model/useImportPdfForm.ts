@@ -1,17 +1,15 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { IFormValues } from "../types";
-import { useImportPdf } from "./useImportPdf";
-import ChartExports from "../../../shared/context/ChartContext";
 import type { IExpenseItem } from "../../../shared/types/expenses";
+import { useImportPdf } from "./useImportPdf";
 import { mapExpensesWithCategories } from "../lib/mapExpensesWithCategories";
-import { useState } from "react";
-
-const { useChartContext } = ChartExports;
+import { useChartStore } from "../../../shared/store-hooks/useChartStore";
 
 export const useImportPdfForm = () => {
    const { handleSubmit, control, formState: { errors } } = useForm<IFormValues>();
    const { mutate: importPdf, isPending, isSuccess } = useImportPdf();
-   const { addChart } = useChartContext();
+   const { addChart } = useChartStore();
    const [message, setMessage] = useState<string>('');
 
    const onSubmit = async (data: IFormValues): Promise<void> => {
