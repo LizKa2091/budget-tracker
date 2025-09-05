@@ -1,14 +1,21 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import https from 'https';
 import dotenv from 'dotenv';
 import multer from 'multer';
+import jwt, { JwtPayload, VerifyErrors } from 'jsonwebtoken';
 
 dotenv.config();
 
 const app = express();
+
+app.use(cors({
+   origin: 'http://localhost:5173',
+   credentials: true
+}));
+
 app.use(cors());
 app.use(express.json());
 
@@ -18,8 +25,211 @@ const API_KEY = process.env.PDFCO_API_KEY ?? '';
 
 const DESTINATION_FILE = path.resolve(__dirname, 'uploads', 'result.json');
 
+interface IUser {
+   email: string;
+   password: string;
+   name: string;
+   refreshToken?: string;
+}
+
+const users: Record<string, IUser> = {};
+const blacklistedTokens = new Set<string>();
+
+const ACCESS_SECRET = process.env.JWT_SECRET!;
+const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
+
+if (!ACCESS_SECRET || !REFRESH_SECRET) {
+   throw new Error('JWT_SECRET or REFRESH_SECRET is not defined in .env');
+}
+
 app.get('/', (req, res) => {
    res.send('Server is running. Use POST /upload to process PDF.');
+});
+
+const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
+   const authHeader = req.headers['authorization'];
+   const token = authHeader && authHeader.split(' ')[1];
+
+   if (!token) {
+      res.status(401).json({ message: 'Токен не предоставлен' });
+      return;
+   }
+
+   if (blacklistedTokens.has(token)) {
+      res.status(403).json({ message: 'Токен недействителен' });
+      return;
+   }
+
+   jwt.verify(token, ACCESS_SECRET, (err: VerifyErrors | null, decoded: string | JwtPayload | undefined) => {
+      if (err || !decoded || typeof decoded === 'string') {
+         res.status(403).json({ message: 'Неверный токен' });
+         return;
+      }
+
+      (req as any).user = decoded;
+      next();
+   });
+};
+
+app.post('/register', (req: Request, res: Response): void => {
+   const { email, password, name } = req.body;
+
+   if (!email || !password) {
+      res.status(400).json({ message: 'Email и пароль обязательны' });
+      return;
+   }
+
+   if (users[email]) {
+      res.status(400).json({ message: 'Пользователь уже существует' });
+      return;
+   }
+
+   users[email] = { email, password, name };
+   res.status(201).json({ message: 'Пользователь зарегистрирован' });
+});
+
+app.post('/login', (req: Request, res: Response): void => {
+   const { email, password } = req.body;
+
+   const user = users[email];
+   if (!user || user.password !== password) {
+      res.status(401).json({ message: 'Неверный email или пароль' });
+      return;
+   }
+
+   const accessToken = jwt.sign(
+      { email: user.email, name: user.name },
+      ACCESS_SECRET,
+      { expiresIn: '15m' }
+   );
+
+   const refreshToken = jwt.sign(
+      { email: user.email },
+      REFRESH_SECRET!,
+      { expiresIn: '7d' }
+   );
+
+   users[email].refreshToken = refreshToken;
+
+   res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
+   });
+
+   res.json({ token: accessToken, message: 'Успешный вход' });
+});
+
+app.post('/refresh', (req: Request, res: Response): void => {
+   const tokenFromCookie = req.cookies?.refreshToken;
+
+   if (!tokenFromCookie) {
+      res.status(401).json({ message: 'Нет refreshToken' });
+      return;
+   }
+
+   jwt.verify(tokenFromCookie, REFRESH_SECRET, (err: jwt.VerifyErrors | null, decoded: JwtPayload | string | undefined) => {
+      if (err || !decoded || typeof decoded === 'string') {
+         res.status(403).json({ message: 'Неверный refreshToken' });
+         return;
+      }
+
+      const { email } = decoded as JwtPayload;
+      const user = users[email];
+
+      if (!user || user.refreshToken !== tokenFromCookie) {
+         res.status(403).json({ message: 'refreshToken не совпадает' });
+         return;
+      }
+
+      const newRefresh = jwt.sign({ email }, REFRESH_SECRET, { expiresIn: '7d' });
+      user.refreshToken = newRefresh;
+
+
+      const newAccess = jwt.sign(
+         { email: user.email, name: user.name },
+         ACCESS_SECRET,
+         { expiresIn: '15m' }
+      );
+
+      res.cookie('refreshToken', newRefresh, {
+         httpOnly: true,
+         sameSite: 'lax',
+         secure: false,
+         maxAge: 7 * 24 * 60 * 60 * 1000,
+         path: '/',
+      });
+
+      res.json({ token: newAccess });
+   });
+});
+
+app.post('/logout', authenticateToken, (req: Request, res: Response): void => {
+   const authHeader = req.headers['authorization'];
+   const token = authHeader && authHeader.split(' ')[1];
+
+   if (token) blacklistedTokens.add(token);
+
+   const email = (req as any).user?.email;
+   if (email && users[email]) {
+      users[email].refreshToken = undefined;
+   }
+
+   res.clearCookie('refreshToken', {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,
+      path: '/',
+   });
+
+   res.json({ message: 'Успешный выход' });
+});
+
+const passwordResetTokens: Record<string, string> = {};
+
+function generateResetToken() {
+   return Math.random().toString(36).substring(2) + Date.now().toString(36);
+};
+
+app.post('/forgot-password', (req: Request, res: Response) => {
+   const { email } = req.body;
+
+   if (!email || !users[email]) {
+      res.status(400).json({ message: 'Пользователь с таким email не найден' });
+      return;
+   }
+
+   const resetToken = generateResetToken();
+   passwordResetTokens[resetToken] = email;
+
+   res.json({ 
+      message: 'Токен для сброса пароля создан',
+      resetToken 
+   });
+});
+
+app.post('/reset-password', (req: Request, res: Response) => {
+   const { token, newPassword } = req.body;
+
+   if (!token || !newPassword) {
+      res.status(400).json({ message: 'Токен и новый пароль обязательны' });
+      return;
+   }
+
+   const userEmail = passwordResetTokens[token];
+
+   if (!userEmail || !users[userEmail]) {
+      res.status(400).json({ message: 'Неверный или просроченный токен' });
+      return;
+   }
+
+   users[userEmail].password = newPassword;
+
+   delete passwordResetTokens[token];
+
+   res.json({ message: 'Пароль успешно сброшен' });
 });
 
 app.post('/upload', upload.single('pdfFile'), async (req: Request, res: Response) => {
@@ -78,6 +288,7 @@ app.post('/chat', async (req: Request, res: Response) => {
             ]
          })
       });
+
 
       if (!aiResponse.ok) {
          const errorText = await aiResponse.text();
