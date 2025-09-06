@@ -6,6 +6,7 @@ import https from 'https';
 import dotenv from 'dotenv';
 import multer from 'multer';
 import jwt, { JwtPayload, VerifyErrors } from 'jsonwebtoken';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(cors({
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 const upload = multer({ dest: path.resolve(__dirname, 'uploads') });
 
