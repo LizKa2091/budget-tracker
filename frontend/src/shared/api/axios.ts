@@ -99,4 +99,4 @@ tokenAxios.interceptors.response.use(
    }
 )
 
-export { importPdfAxios };
+export { importPdfAxios, tokenAxios };
