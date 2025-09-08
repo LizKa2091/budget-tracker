@@ -1,8 +1,9 @@
 import { useEffect, useState, type FC } from 'react';
+import { Link } from 'react-router-dom';
+import { Button, Flex, Form, Input } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
 import AuthExports from '../../../../shared/context/AuthContext';
 import type { IFormMessage, IResetPassFormData } from '../../authTypes';
-import { Button, Flex, Form, Input } from 'antd';
 
 const ResetPassForm: FC = () => {
    const [resetStatus, setResetStatus] = useState<IFormMessage>();
@@ -37,7 +38,7 @@ const ResetPassForm: FC = () => {
 
    return (
       <Flex vertical justify='center' align='center' gap='middle'>
-         <h2>Смена пароля</h2>
+         <h3>Смена пароля</h3>
          <Form onFinish={handleSubmit(onSubmit)} action='#'>
             <Form.Item label='Новый пароль' required validateStatus={errors.newPassword ? 'error' : ''} help={errors.newPassword?.message}>
                <Controller name='newPassword' control={control} rules={{ required: 'Введите новый пароль', minLength: { value: 6, message: 'Минимальная длина пароля 6 символов' } }} render={({ field }) => 
@@ -53,9 +54,12 @@ const ResetPassForm: FC = () => {
                <Button htmlType='submit' loading={isResetting}>Сменить пароль</Button>
             </Flex>
          </Form>
-         <Flex>
+         <Flex vertical align='center' gap='middle'>
             {resetStatus?.message &&
                <p className={resetStatus.type === 'error' ? 'failed-response' : 'success-response'}>{resetStatus.message}</p>
+            }
+            {resetStatus?.type && 
+               <Link to='/auth'>{resetStatus?.type === 'success' ? 'Войти в аккаунт' : 'Вернуться назад'}</Link>
             }
          </Flex>
       </Flex>

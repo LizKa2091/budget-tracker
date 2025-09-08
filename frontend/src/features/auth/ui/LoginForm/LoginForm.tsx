@@ -17,6 +17,8 @@ const LoginForm: FC = () => {
    }, [email, password]);
 
    const onSubmit = async (data: ILoginFormData) => {
+      setLoginStatus({ message: '', type: undefined });
+      
       const response = await login(data.email, data.password);
 
       if (response instanceof Error) {
@@ -29,7 +31,7 @@ const LoginForm: FC = () => {
 
    return (
       <Flex vertical justify='center' align='center' gap='middle'>
-         <h2>Вход</h2>
+         <h3>Вход</h3>
          <Form onFinish={(handleSubmit(onSubmit))} action='#'>
             <Form.Item label='Почта' required validateStatus={errors.email ? 'error' : ''} help={errors.email?.message}>
                <Controller name='email' control={control} rules={{ required: 'Введите почту', pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: 'Неверный формат почты' } }} render={({ field }) => 

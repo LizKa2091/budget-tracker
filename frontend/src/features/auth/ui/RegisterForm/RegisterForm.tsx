@@ -33,7 +33,7 @@ const RegisterForm: FC = () => {
 
    return (
       <Flex vertical justify='center' align='center' gap='middle'>
-         <h2>Регистрация</h2>
+         <h3>Регистрация</h3>
          <Form action='#' onFinish={handleSubmit(onSubmit)}>
             <Form.Item label='Почта' required validateStatus={errors.email ? 'error' : ''} help={errors.email?.message}>
                <Controller name='email' control={control} rules={{ required: 'Введите почту', pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: 'Неверный формат почты' } }} render={({ field }) =>
