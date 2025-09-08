@@ -29,3 +29,15 @@ export interface IForgotPasswordResponse {
 export interface IResetPasswordResponse {
    message: string;
 };
+
+export interface IFormMessage {
+   message: string;
+   type: 'success' | 'error' | undefined;
+};
+
+export interface IRegisterFormData {
+   email: string;
+   password: string;
+   passwordRepeat: string;
+   name: string;
+};
