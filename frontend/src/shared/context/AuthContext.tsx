@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type FC, type ReactNode } from 'react';
-import type { ILoginRequestResponse, ILogoutResponse, IRegisterResponse, IVerifyAuthStatusResponse } from '../../features/auth/authTypes';
-import { useLoginUser, useLogoutUser, useRegisterUser, useVerifyAuthStatus } from '../../features/auth/model/useAuth';
+import type { IForgotPasswordResponse, ILoginRequestResponse, ILogoutResponse, IRegisterResponse, IVerifyAuthStatusResponse } from '../../features/auth/authTypes';
+import { useForgotPassword, useLoginUser, useLogoutUser, useRegisterUser, useVerifyAuthStatus } from '../../features/auth/model/useAuth';
 
 interface IAuthContext {
    isAuthed: boolean | null;
@@ -9,6 +9,8 @@ interface IAuthContext {
    isRegistering: boolean;
    login: (email: string, password: string) => Promise<ILoginRequestResponse | Error>;
    isLogining: boolean;
+   forgotPassword: (email: string) => Promise<IForgotPasswordResponse | Error>;
+   isForgetting: boolean;
    logout: () => Promise<ILogoutResponse | Error>;
    isLogouting: boolean;
    checkLoginStatus: () => Promise<IVerifyAuthStatusResponse>;
@@ -26,6 +28,7 @@ const AuthContextProvider: FC<IAuthProvider> = ({ children })=> {
 
    const { mutateAsync: registerMutate, isPending: isRegistering } = useRegisterUser();
    const { mutateAsync: loginMutate, isPending: isLogining } = useLoginUser();
+   const { mutateAsync: forgotMutate, isPending: isForgetting } = useForgotPassword();
    const { mutateAsync: logoutMutate, isPending: isLogouting } = useLogoutUser();
    const { refetch: refecthAuth } = useVerifyAuthStatus(token);
 
@@ -63,6 +66,24 @@ const AuthContextProvider: FC<IAuthProvider> = ({ children })=> {
       }
    };
 
+   const forgotPassword = async (email: string): Promise<IForgotPasswordResponse | Error> => {
+      try {
+         const result = await forgotMutate({ email });
+
+         if (result.resetToken) {
+            localStorage.setItem('resetToken', result.resetToken);
+         }
+         else {
+            localStorage.removeItem('resetToken');
+         }
+
+         return result;
+      }
+      catch (error) {
+         return error as Error;
+      }
+   }
+
    const logout = async (): Promise<ILogoutResponse | Error> => {
       try {
          const response = await logoutMutate();
@@ -96,7 +117,7 @@ const AuthContextProvider: FC<IAuthProvider> = ({ children })=> {
    };
 
    return (
-      <AuthContext.Provider value={{ isAuthed, token, register, isRegistering, login, isLogining, logout, isLogouting, checkLoginStatus }}>
+      <AuthContext.Provider value={{ isAuthed, token, register, isRegistering, login, isLogining, forgotPassword, isForgetting, logout, isLogouting, checkLoginStatus }}>
          {children}
       </AuthContext.Provider>
    );
