@@ -6,8 +6,11 @@ interface IAuthContext {
    isAuthed: boolean | null;
    token: string | null;
    register: (email: string, password: string, name: string) => Promise<IRegisterResponse | Error>;
+   isRegistering: boolean;
    login: (email: string, password: string) => Promise<ILoginRequestResponse | Error>;
+   isLogining: boolean;
    logout: () => Promise<ILogoutResponse | Error>;
+   isLogouting: boolean;
    checkLoginStatus: () => Promise<IVerifyAuthStatusResponse>;
 };
 
@@ -21,9 +24,9 @@ const AuthContextProvider: FC<IAuthProvider> = ({ children })=> {
    const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
    const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
 
-   const { mutateAsync: registerMutate } = useRegisterUser();
-   const { mutateAsync: loginMutate } = useLoginUser();
-   const { mutateAsync: logoutMutate } = useLogoutUser();
+   const { mutateAsync: registerMutate, isPending: isRegistering } = useRegisterUser();
+   const { mutateAsync: loginMutate, isPending: isLogining } = useLoginUser();
+   const { mutateAsync: logoutMutate, isPending: isLogouting } = useLogoutUser();
    const { refetch: refecthAuth } = useVerifyAuthStatus(token);
 
    const clearAuthData = (): void => {
@@ -93,7 +96,7 @@ const AuthContextProvider: FC<IAuthProvider> = ({ children })=> {
    };
 
    return (
-      <AuthContext.Provider value={{ isAuthed, token, register, login, logout, checkLoginStatus }}>
+      <AuthContext.Provider value={{ isAuthed, token, register, isRegistering, login, isLogining, logout, isLogouting, checkLoginStatus }}>
          {children}
       </AuthContext.Provider>
    );
@@ -104,7 +107,7 @@ const useAuthContext = () => {
 
    if (!context) throw new Error('AuthContext должен использоваться внутри AuthContextProvider');
 
-   return context;
+   return context; 
 }
 
 const AuthExports = { AuthContext, AuthContextProvider, useAuthContext };
