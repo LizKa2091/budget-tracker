@@ -90,10 +90,14 @@ const AuthContextProvider: FC<IAuthProvider> = ({ children })=> {
    const resetPassword = async (token: string, newPassword: string): Promise<IResetPasswordResponse | Error> => {
       try {
          const result = await resetMutate({ token, newPassword });
+         
          return result;
       }
       catch (error) {
          return error as Error;
+      }
+      finally {
+         localStorage.removeItem('resetToken');
       }
    };
 

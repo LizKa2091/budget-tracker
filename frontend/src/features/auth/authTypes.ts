@@ -51,3 +51,8 @@ export interface ILoginFormData {
 export interface IForgotPassFormData {
    email: string;
 };
+
+export interface IResetPassFormData {
+   newPassword: string;
+   newPasswordRepeat: string;
+};
