@@ -4,6 +4,7 @@ export interface IRegisterResponse {
 
 export interface ILoginRequestResponse {
    token: string;
+   message: string;
 };
 
 export interface ILogoutResponse {
@@ -40,4 +41,9 @@ export interface IRegisterFormData {
    password: string;
    passwordRepeat: string;
    name: string;
+};
+
+export interface ILoginFormData {
+   email: string;
+   password: string;
 };
