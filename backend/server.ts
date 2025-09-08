@@ -17,7 +17,6 @@ app.use(cors({
    credentials: true
 }));
 
-app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
@@ -82,12 +81,12 @@ app.post('/register', (req: Request, res: Response): void => {
    }
 
    if (users[email]) {
-      res.status(400).json({ message: 'Пользователь уже существует' });
+      res.status(400).json({ message: 'Пользователь уже существует с такой почтой' });
       return;
    }
 
    users[email] = { email, password, name };
-   res.status(201).json({ message: 'Пользователь зарегистрирован' });
+   res.status(201).json({ message: 'Успешная регистрация' });
 });
 
 app.post('/login', (req: Request, res: Response): void => {
