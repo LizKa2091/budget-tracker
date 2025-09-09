@@ -5,6 +5,8 @@ import DashBoardPage from '../pages/DashBoardPage/DashBoardPage';
 import ImportPdfPage from '../pages/ImportPdfPage/ImportPdfPage';
 import ChartSlotsPage from '../pages/ChartSlotsPage/ChartSlotsPage';
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
+import AuthPage from '../pages/AuthPage/AuthPage';
+import ResetPasswordPage from '../pages/ResetPasswordPage/ResetPasswordPage';
 
 const Router: FC = () => {
    return (
@@ -14,6 +16,8 @@ const Router: FC = () => {
             <Route path='/import-pdf' element={<ImportPdfPage />} />
             <Route path='/dashboard' element={<ChartSlotsPage />} />
             <Route path='/dashboard/:id' element={<DashBoardPage />} />
+            <Route path='/auth' element={<AuthPage />} />
+            <Route path='/reset-password' element={<ResetPasswordPage />} />
             <Route path='*' element={<NotFoundPage />} />
          </Routes>
       </BrowserRouter>

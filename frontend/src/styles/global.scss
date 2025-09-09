@@ -6,6 +6,11 @@
    transition: background-color 0.3s ease-in, color 0.3s ease-in;
    min-height: 100dvh;
 }
+.outlined-container {
+   border: 1px solid var(--text-color);
+   border-radius: 12px;
+   padding: 12px;
+}
 .ant-layout {
    min-height: 100dvh;
 }
@@ -30,8 +35,24 @@
 .ant-layout, .ant-layout-content, .ant-layout-header, .ant-menu, .ant-menu-title-content, .ant-card, .ant-card-actions, .ant-card-actions a,
 .ant-statistic-title, .ant-statistic-content, .ant-btn, .ant-card-head-title, .ant-form-item-label label, .ant-upload-text, .ant-upload-hint,
 .ant-input, .ant-segmented, .ant-checkbox-label, .ant-picker, .ant-picker-panel, .ant-picker-header-view, .ant-picker-footer,
-.ant-picker-now-btn, .ant-input-number, .ant-input-number-button, p, .ant-upload-list-item-name, .ant-upload-icon span {
-   background-color: var(--bg-color) !important;
-   color: var(--text-color) !important;
-   border-color: var(--text-color) !important;
+.ant-picker-now-btn, .ant-input-number, .ant-input-number-button, p, .ant-upload-list-item-name, .ant-upload-icon span, 
+.ant-input-affix-wrapper, .ant-input-password-icon {
+   &:not(.failed-response, .success-response) {
+      background-color: var(--bg-color) !important;
+      color: var(--text-color) !important;
+      border-color: var(--text-color) !important;
+   }
+}
+
+.ant-input:-webkit-autofill, .ant-input:-webkit-autofill:hover,
+.ant-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px var(--bg-color) inset !important;
+  -webkit-text-fill-color: var(--text-color) !important;
+}
+
+.ant-input-password:-webkit-autofill,
+.ant-input-password:-webkit-autofill:hover,
+.ant-input-password:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px var(--bg-color) inset !important;
+  -webkit-text-fill-color: var(--text-color) !important;
 }
