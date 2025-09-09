@@ -24,7 +24,7 @@ const AuthSwitcher: FC = () => {
    }
 
    return (
-      <Flex vertical gap='large'>
+      <Flex vertical gap='large' className='outlined-container'>
          {authForm()}
 
          {authMode === 'login' &&

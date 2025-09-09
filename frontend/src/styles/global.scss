@@ -6,6 +6,11 @@
    transition: background-color 0.3s ease-in, color 0.3s ease-in;
    min-height: 100dvh;
 }
+.outlined-container {
+   border: 1px solid var(--text-color);
+   border-radius: 12px;
+   padding: 12px;
+}
 .ant-layout {
    min-height: 100dvh;
 }
