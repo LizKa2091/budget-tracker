@@ -18,15 +18,21 @@ const NotificationProvider: FC<INotificationProviderProps> = ({ children }) => {
    const [notifications, setNotifications] = useState<INotificationItem[]>([]);
 
    const addNotification = useCallback((title: string, message: string, type: 'error' | 'warning' | 'info') => {
+      const id = Date.now().toString() + Math.random();
+      
       setNotifications(prev => [
          ...prev,
          {
-            id: Date.now().toString() + Math.random(),
+            id,
             title,
             message,
             type
          }
       ]);
+
+      setTimeout(() => {
+         removeNotification(id);
+      }, 5000);
    }, []);
 
    const removeNotification = (id: string) => {
