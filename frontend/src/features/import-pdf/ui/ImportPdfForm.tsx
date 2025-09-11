@@ -1,7 +1,8 @@
+import { useEffect, type FC } from 'react';
 import { Button, Flex, Form, Input, Spin, Upload } from 'antd';
-import type { FC } from 'react';
 import { Controller, type Control, type FieldErrors } from 'react-hook-form';
 import type { IFormValues } from '../types';
+import NotificationExports from '../../../shared/context/NotificationContext';
 
 interface IImportPdfFormProps {
    handleSubmit: () => void;
@@ -13,6 +14,14 @@ interface IImportPdfFormProps {
 }
 
 const ImportPdfForm: FC<IImportPdfFormProps> = ({ handleSubmit, control, errors, isPending, isSuccess, message }) => {
+   const { addNotification } = NotificationExports.useNotifications();
+
+   useEffect(() => {
+      if (isSuccess) {
+         addNotification('', message, 'info');
+      }
+   }, [isSuccess, addNotification, message]);
+
    const handleBeforeUpload = (file: File, onChange: (file: File | null) => void) => {
       const isPdf = file.type === 'application/pdf';
 
@@ -26,7 +35,7 @@ const ImportPdfForm: FC<IImportPdfFormProps> = ({ handleSubmit, control, errors,
    }
    
    return (
-      <Flex vertical gap='middle'>
+      <Flex vertical justify='center' align='center' gap='middle'>
          <h3>Импортируйте .pdf файл с выпиской из банка за месяц</h3>
          <Form action='#' onFinish={handleSubmit}>
             <Form.Item label='Название новой диаграммы' required validateStatus={errors.chartName ? 'error' : ''} help={errors.chartName?.message}>
@@ -65,8 +74,7 @@ const ImportPdfForm: FC<IImportPdfFormProps> = ({ handleSubmit, control, errors,
             </Flex>
          </Form>
          {isPending && <Spin />}
-         {isSuccess && <span className='success-response'>{message}</span>}
-         {isSuccess === false && <span className='failed-response'>{message}</span>}
+         {!isPending && isSuccess === false && <span className='failed-response'>{message}</span>}
       </Flex>
    )
 }
