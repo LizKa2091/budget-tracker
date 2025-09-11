@@ -1,7 +1,6 @@
 import { useState, type FC } from 'react';
 import { Alert, Flex } from 'antd';
 import NotificationExports from '../../../../shared/context/NotificationContext';
-import styles from './NotificationItem.module.scss';
 
 interface INotificationItemProps {
    id: string;
@@ -30,7 +29,6 @@ const NotificationItem: FC<INotificationItemProps> = ({ id, title, message, type
                <span>{message}</span>
             </Flex>
          } 
-         className={styles.card} 
       />
    )
 }
