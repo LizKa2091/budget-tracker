@@ -5,9 +5,11 @@ import ThemeExports from "../shared/context/ThemeContext";
 import { Provider } from "react-redux";
 import { store } from "../features/chart-store";
 import AuthExports from "../shared/context/AuthContext";
+import NotificationExports from "../shared/context/NotificationContext";
 
 const { ThemeProvider } = ThemeExports;
 const { AuthContextProvider } = AuthExports;
+const { NotificationProvider } = NotificationExports;
 
 const queryClient = new QueryClient();
 
@@ -16,9 +18,11 @@ const App: FC = () => {
       <Provider store={store}>
          <QueryClientProvider client={queryClient}>
             <AuthContextProvider>
-               <ThemeProvider>
-                  <Router />
-               </ThemeProvider>
+               <NotificationProvider>
+                  <ThemeProvider>
+                     <Router />
+                  </ThemeProvider>
+               </NotificationProvider>
             </AuthContextProvider>
          </QueryClientProvider>
       </Provider>
