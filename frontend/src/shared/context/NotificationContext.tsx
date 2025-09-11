@@ -5,6 +5,7 @@ interface INotificationContext {
    notifications: INotificationItem[];
    addNotification: (title: string, message: string, type: 'error' | 'warning' | 'info') => void;
    removeNotification: (id: string) => void;
+   clearAllNotifications: () => void;
 };
 
 interface INotificationProviderProps {
@@ -20,20 +21,24 @@ const NotificationProvider: FC<INotificationProviderProps> = ({ children }) => {
       setNotifications(prev => [
          ...prev,
          {
-            id: Date.now().toString(),
+            id: Date.now().toString() + Math.random(),
             title,
             message,
             type
          }
       ]);
-}, []);
+   }, []);
 
    const removeNotification = (id: string) => {
       setNotifications(prev => prev.filter(notif => notif.id !== id));
-   }
+   };
+
+   const clearAllNotifications = () => {
+      setNotifications([]);
+   };
 
    return (
-      <NotificationContext.Provider value={{ notifications, addNotification, removeNotification }}>
+      <NotificationContext.Provider value={{ notifications, addNotification, removeNotification, clearAllNotifications }}>
          {children}
       </NotificationContext.Provider>
    )
