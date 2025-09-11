@@ -4,6 +4,7 @@ import { Layout, Flex, Card, Statistic, Divider } from 'antd';
 import type { IChartSlot } from '../../shared/types/charts';
 import HeaderBar from '../../widgets/header-bar/HeaderBar';
 import { useChartStore } from '../../shared/store-hooks/useChartStore';
+import Notifications from '../../features/notifications/ui/Notifications/Notification';
 import styles from './HomePage.module.scss';
 
 const { Content } = Layout;
@@ -68,6 +69,7 @@ const HomePage: FC = () => {
                )}
             </Flex>
          </Content>
+         <Notifications />
       </Layout>
    );
 };

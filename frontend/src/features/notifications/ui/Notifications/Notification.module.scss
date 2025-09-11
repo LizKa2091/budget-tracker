@@ -1,0 +1,8 @@
+.container {
+   position: absolute;
+   top: 1dvw;
+   right: 1dvw;
+   max-width: 15dvw;
+   max-height: calc(100dvh - 1dvw);
+   overflow-y: auto;
+}

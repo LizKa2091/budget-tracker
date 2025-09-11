@@ -7,6 +7,7 @@ import ChartModeSwitcher from '../../features/chart-mode-switcher/ui/ChartModeSw
 import HeaderBar from '../../widgets/header-bar/HeaderBar';
 import { getCategoriesFromChart } from '../../shared/lib/getCategoriesFromChart';
 import { useChartStore } from '../../shared/store-hooks/useChartStore';
+import Notifications from '../../features/notifications/ui/Notifications/Notification';
 
 const { Content } = Layout;
 
@@ -58,6 +59,7 @@ const DashBoardPage: FC = () => {
                )}
             </Flex>
          </Content>
+         <Notifications />
       </Layout>
    )
 }
