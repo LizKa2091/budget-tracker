@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState, type FC } from 'react';
 import { useParams } from 'react-router-dom';
 import { Flex, Layout } from 'antd';
-import BudgetChart from '../../widgets/dashboard/BudgetChart';
-import { type ChartMode, type IChartSlot } from '../../shared/types/charts';
-import ChartModeSwitcher from '../../features/chart-mode-switcher/ui/ChartModeSwitcher';
-import HeaderBar from '../../widgets/header-bar/HeaderBar';
 import { getCategoriesFromChart } from '../../shared/lib/getCategoriesFromChart';
 import { useChartStore } from '../../shared/store-hooks/useChartStore';
+import ChartModeSwitcher from '../../features/chart-mode-switcher/ui/ChartModeSwitcher';
+import HeaderBar from '../../widgets/header-bar/HeaderBar';
 import Notifications from '../../features/notifications/ui/Notifications/Notification';
+import BudgetChart from '../../widgets/dashboard/BudgetChart';
+import type { ChartMode, IChartSlot } from '../../shared/types/charts';
 
 const { Content } = Layout;
 

@@ -1,9 +1,9 @@
-import type { FC } from 'react'
+import type { FC } from 'react';
 import { Link } from 'react-router-dom';
-import type { IChartSlot } from '../../shared/types/charts';
 import { Button, Card, Flex } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useChartStore } from '../../shared/store-hooks/useChartStore';
+import type { IChartSlot } from '../../shared/types/charts';
 
 const ChartSlots: FC = () => {
    const { charts, removeChart } = useChartStore();
@@ -32,7 +32,10 @@ const ChartSlots: FC = () => {
                <Card 
                   key={chart.id} 
                   title={chart.name} 
-                  extra={<Button danger icon={<DeleteOutlined />} onClick={() => handleDelChart(chart.id)} aria-label='Удалить' title='Удалить' />}
+                  extra={<Button danger icon={<DeleteOutlined />} 
+                  onClick={() => handleDelChart(chart.id)} 
+                  aria-label='Удалить' 
+                  title='Удалить' />}
                >
                   <Flex vertical>
                      {chart.data && `Дата первой траты: ${chart.data[0].date}`}

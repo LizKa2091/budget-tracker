@@ -1,6 +1,6 @@
 import { useEffect, type FC, type JSX } from 'react';
-import AuthExports from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
+import AuthExports from '../../context/AuthContext';
 import NotificationExports from '../../context/NotificationContext';
 
 interface IAuthedUserRouteProps {

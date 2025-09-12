@@ -1,5 +1,5 @@
-import { Button, Flex } from 'antd';
 import { useState, type FC } from 'react'
+import { Button, Flex } from 'antd';
 import LoginForm from '../LoginForm/LoginForm';
 import RegisterForm from '../RegisterForm/RegisterForm';
 import ForgotPassForm from '../ForgotPassForm/ForgotPassForm';

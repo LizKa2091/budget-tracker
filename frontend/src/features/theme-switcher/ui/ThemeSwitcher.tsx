@@ -1,7 +1,7 @@
 import { type FC } from 'react';
-import ThemeExports from '../../../shared/context/ThemeContext';
 import { Button } from 'antd';
 import { MoonOutlined, SunOutlined } from '@ant-design/icons';
+import ThemeExports from '../../../shared/context/ThemeContext';
 
 const { useTheme } = ThemeExports;
 

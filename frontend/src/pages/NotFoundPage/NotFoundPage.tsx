@@ -1,7 +1,7 @@
 import { type FC } from 'react';
+import { Link } from 'react-router-dom';
 import { Flex, Layout } from 'antd';
 import HeaderBar from '../../widgets/header-bar/HeaderBar';
-import { Link } from 'react-router-dom';
 import Notifications from '../../features/notifications/ui/Notifications/Notification';
 
 const { Content } = Layout;

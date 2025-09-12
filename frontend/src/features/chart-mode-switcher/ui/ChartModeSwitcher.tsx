@@ -1,5 +1,5 @@
+import { type FC } from 'react';
 import { Checkbox, Flex, Segmented, type CheckboxChangeEvent } from 'antd';
-import { type FC } from 'react'
 import type { ChartMode } from '../../../shared/types/charts';
 
 interface IChartModeSwitcherProps {

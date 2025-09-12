@@ -1,10 +1,10 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { categorizeExpenses } from "../../shared/lib/categorizeExpenses";
-import type { IChartItem, IChartSlot } from '../../shared/types/charts';
-import type { IExpensesByCategories } from "../../shared/types/expenses";
+import type { IChartSlot } from '../../shared/types/charts';
 import { categoryKeywords } from "../../shared/lib/categoryKeywords";
 import type { RootState } from './index';
 import { saveChartsToStorage } from "../../shared/lib/chartsLocalStorage";
+import type { IAddChartThunkArgs, IAddChartThunkResponse, IAddExpensePayload } from "./chartStoreTypes";
 
 interface IChartState {
    charts: IChartSlot[];
@@ -23,25 +23,6 @@ const initialState: IChartState = {
          { id: 4, name: null, data: null }
       ],
    userCategories: savedCategories ? JSON.parse(savedCategories) : {}
-};
-
-interface IAddChartThunkArgs {
-   newSlotData: IChartItem[];
-   chartName: string;
-};
-
-interface IAddChartThunkResponse {
-   newSlotData: IChartItem[];
-   chartName: string;
-   categorizedData: IExpensesByCategories[] | null;
-};
-
-interface IAddExpensePayload {
-   chartId: number;
-   category: string;
-   date: string;
-   title: string;
-   amount: number;
 };
 
 const chartSlice = createSlice({
