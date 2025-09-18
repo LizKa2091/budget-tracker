@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from '../pages/HomePage/HomePage';
-import DashBoardPage from '../pages/DashBoardPage/DashBoardPage';
+import DashBoardPage from '../pages/DashBoardPage/ui/DashBoardPage';
 import ImportPdfPage from '../pages/ImportPdfPage/ImportPdfPage';
 import ChartSlotsPage from '../pages/ChartSlotsPage/ChartSlotsPage';
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
