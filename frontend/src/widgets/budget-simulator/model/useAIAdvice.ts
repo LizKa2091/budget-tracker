@@ -1,20 +1,18 @@
+import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import type { IExpensesByCategories } from "../../../shared/types/expenses";
 import type { IChartItem } from "../../../shared/types/charts";
-import axios from "axios";
+import { cutSpendingsPattern, setGoalPattern } from "../lib/patterns";
 
 interface IAIResponse {
    answer: string;
-};
+}
 
 interface IAIAdviceParams {
    promptType: 'cutSpendings' | 'setGoal';
    value?: string;
    expenses: IChartItem[] | IExpensesByCategories[];
 }
-
-const cutSpendingsPattern: string = 'мне нужно сократить расходы, я тебе предоставляю json файл с моими тратами за месяц. дай небольшой текстовый совет, как сэкономить ';
-const setGoalPattern: string = 'я хочу накопить деньги. я тебе предоставляю json файл с моими тратами за месяц. дай небольшой текстовый совет, как накопить ';
 
 const getAIAdvice = async ({ promptType, value = 'в целом', expenses }: IAIAdviceParams): Promise<IAIResponse> => {
    let prompt: string = '';
@@ -31,7 +29,7 @@ const getAIAdvice = async ({ promptType, value = 'в целом', expenses }: IA
    });
 
    return data;
-};
+}
 
 export const useAIAdvice = () => {
    return useMutation<IAIResponse, Error, IAIAdviceParams>({
@@ -39,4 +37,4 @@ export const useAIAdvice = () => {
       mutationFn: getAIAdvice,
       retry: 1
    });
-};
+}
