@@ -1,22 +1,20 @@
 import { useEffect, useMemo, useState, type FC } from 'react';
 import { Button, Flex } from 'antd';
 import { Pie, PieChart, ResponsiveContainer, Cell, Tooltip } from 'recharts';
-import { type ChartMode, type IChartItem } from '../../shared/types/charts';
-import type { IExpensesByCategories } from '../../shared/types/expenses';
-import { getRandomColor } from '../../shared/lib/getRandomColor';
 import BudgetSimulator from '../budget-simulator/ui/BudgetSimulator';
 import AddExpenseForm from '../../features/add-expense/ui/AddExpenseForm';
 import { useChartStore } from '../../shared/store-hooks/useChartStore';
+import { getRandomColor } from '../../shared/lib/getRandomColor';
+import { type ChartMode, type IChartItem } from '../../shared/types/charts';
+import type { IExpensesByCategories } from '../../shared/types/expenses';
+import { maxRadiusSize, minRadiusSize } from '../budget-simulator/lib/radiusSizes';
 import styles from './BudgetChart.module.scss';
 
 interface IBudgetChartProps {
    chartId: number;
    displayMode: ChartMode;
    categoriesToShow: string[] | null;
-};
-
-const maxRadiusSize: number = 500;
-const minRadiusSize: number = 150;
+}
 
 const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode, categoriesToShow }) => {
    const [chartData, setChartData] = useState<IChartItem[] | IExpensesByCategories[] | null>(null);
@@ -89,7 +87,7 @@ const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode, categoriesTo
                   ))}
                </Pie>
                <Tooltip 
-                  formatter={(value: number, name: string, props: any) => [`${value} ₽`, props.payload?.category || name]} 
+                  formatter={(value: number, name: string, props) => [`${value} ₽`, props.payload?.category || name]} 
                   labelFormatter={(category) => category} 
                />
             </PieChart>
@@ -107,4 +105,4 @@ const BudgetChart: FC<IBudgetChartProps> = ({ chartId, displayMode, categoriesTo
    )
 }
 
-export default BudgetChart;
+export default BudgetChart
