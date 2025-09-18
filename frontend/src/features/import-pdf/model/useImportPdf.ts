@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { type IExpenseItem } from "../../../shared/types/expenses";
 import { importPdfAxios } from "../../../shared/api/axios";
+import type { IExpenseItem } from "../../../shared/types/expenses";
 
 export const useImportPdf = () => {
    return useMutation<IExpenseItem[], Error, File>({

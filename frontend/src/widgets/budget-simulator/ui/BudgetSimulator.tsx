@@ -7,7 +7,7 @@ import type { IExpensesByCategories } from '../../../shared/types/expenses';
 
 interface IBudgetSimulatorProps {
    chartData: IChartItem[] | IExpensesByCategories[]
-};
+}
 
 const BudgetSimulator: FC<IBudgetSimulatorProps> = ({ chartData }) => {
    return (
@@ -21,4 +21,4 @@ const BudgetSimulator: FC<IBudgetSimulatorProps> = ({ chartData }) => {
    )
 }
 
-export default BudgetSimulator;
+export default BudgetSimulator

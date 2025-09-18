@@ -1,10 +1,10 @@
 import { type FC, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import { Layout, Flex, Card, Statistic, Divider } from 'antd';
-import type { IChartSlot } from '../../shared/types/charts';
-import HeaderBar from '../../widgets/header-bar/HeaderBar';
+import { Link } from 'react-router-dom';
 import { useChartStore } from '../../shared/store-hooks/useChartStore';
+import HeaderBar from '../../widgets/header-bar/HeaderBar';
 import Notifications from '../../features/notifications/ui/Notifications/Notification';
+import type { IChartSlot } from '../../shared/types/charts';
 import styles from './HomePage.module.scss';
 
 const { Content } = Layout;
@@ -71,7 +71,7 @@ const HomePage: FC = () => {
          </Content>
          <Notifications />
       </Layout>
-   );
-};
+   )
+}
 
-export default HomePage;
+export default HomePage

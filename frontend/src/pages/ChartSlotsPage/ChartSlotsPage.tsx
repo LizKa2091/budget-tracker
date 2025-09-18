@@ -20,4 +20,4 @@ const ChartSlotsPage: FC = () => {
    )
 }
 
-export default ChartSlotsPage;
+export default ChartSlotsPage

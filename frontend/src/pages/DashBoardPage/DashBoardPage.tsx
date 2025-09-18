@@ -64,4 +64,4 @@ const DashBoardPage: FC = () => {
    )
 }
 
-export default DashBoardPage;
+export default DashBoardPage

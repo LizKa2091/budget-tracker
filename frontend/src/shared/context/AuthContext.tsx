@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type FC, type ReactNode } from 'react';
-import type { IForgotPasswordResponse, ILoginRequestResponse, ILogoutResponse, IRegisterResponse, IResetPasswordResponse, IVerifyAuthStatusResponse } from '../../features/auth/authTypes';
 import { useForgotPassword, useLoginUser, useLogoutUser, useRegisterUser, useResetPassword, useVerifyAuthStatus } from '../../features/auth/model/useAuth';
+import type { IForgotPasswordResponse, ILoginRequestResponse, ILogoutResponse, IRegisterResponse, IResetPasswordResponse, IVerifyAuthStatusResponse } from '../../features/auth/authTypes';
 
 interface IAuthContext {
    isAuthed: boolean | null;
@@ -16,11 +16,11 @@ interface IAuthContext {
    logout: () => Promise<ILogoutResponse | Error>;
    isLogouting: boolean;
    checkLoginStatus: () => Promise<IVerifyAuthStatusResponse>;
-};
+}
 
 interface IAuthProvider {
    children: ReactNode;
-};
+}
 
 const AuthContext  = createContext<IAuthContext | undefined>(undefined);
 
@@ -138,7 +138,7 @@ const AuthContextProvider: FC<IAuthProvider> = ({ children })=> {
          {children}
       </AuthContext.Provider>
    );
-};
+}
 
 const useAuthContext = () => {
    const context = useContext(AuthContext);

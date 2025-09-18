@@ -21,4 +21,4 @@ const ResetPasswordPage: FC = () => {
    )
 }
 
-export default ResetPasswordPage;
+export default ResetPasswordPage

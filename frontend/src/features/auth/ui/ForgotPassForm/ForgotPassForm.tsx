@@ -60,4 +60,4 @@ const ForgotPassForm: FC = () => {
    )
 }
 
-export default ForgotPassForm;
+export default ForgotPassForm

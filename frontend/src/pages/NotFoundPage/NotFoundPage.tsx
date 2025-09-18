@@ -21,4 +21,4 @@ const NotFoundPage: FC = () => {
    )
 }
 
-export default NotFoundPage;
+export default NotFoundPage

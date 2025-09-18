@@ -79,4 +79,4 @@ const ImportPdfForm: FC<IImportPdfFormProps> = ({ handleSubmit, control, errors,
    )
 }
 
-export default ImportPdfForm;
+export default ImportPdfForm

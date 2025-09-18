@@ -5,7 +5,7 @@ import NotificationExports from '../../context/NotificationContext';
 
 interface IAuthedUserRouteProps {
    children: JSX.Element;
-};
+}
 
 const AuthedUserRoute: FC<IAuthedUserRouteProps> = ({ children }) => {
    const { token } = AuthExports.useAuthContext();
@@ -25,4 +25,4 @@ const AuthedUserRoute: FC<IAuthedUserRouteProps> = ({ children }) => {
    return children;
 }
 
-export default AuthedUserRoute;
+export default AuthedUserRoute

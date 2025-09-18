@@ -10,7 +10,7 @@ interface IFormData {
    date: Dayjs;
    title: string;
    amount: number;
-};
+}
 
 interface IAddExpenseFormProps {
    chartId: number;
@@ -60,4 +60,4 @@ const AddExpenseForm: FC<IAddExpenseFormProps> = ({ chartId }) => {
    )
 }
 
-export default AddExpenseForm;
+export default AddExpenseForm

@@ -20,4 +20,4 @@ const ImportPdfPage: FC = () => {
    )
 }
 
-export default ImportPdfPage;
+export default ImportPdfPage

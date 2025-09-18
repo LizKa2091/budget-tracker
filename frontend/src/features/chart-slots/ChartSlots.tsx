@@ -1,7 +1,7 @@
 import type { FC } from 'react';
-import { Link } from 'react-router-dom';
 import { Button, Card, Flex } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 import { useChartStore } from '../../shared/store-hooks/useChartStore';
 import type { IChartSlot } from '../../shared/types/charts';
 
@@ -38,7 +38,7 @@ const ChartSlots: FC = () => {
                   title='Удалить' />}
                >
                   <Flex vertical>
-                     {chart.data && `Дата первой траты: ${chart.data[0].date}`}
+                     {chart.data && `Дата первой траты: ${chart.data[0].date || 'Неизвестно'}`}
                      <Link to={`/dashboard/${chart.id}`}>Перейти к диаграмме</Link>
                   </Flex>
                </Card>

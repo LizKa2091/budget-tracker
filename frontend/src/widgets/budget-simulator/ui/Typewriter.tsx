@@ -40,4 +40,4 @@ const Typewriter: FC<ITypewriterProps> = ({ words }) => {
    return <span>{currentText}</span>;
 };
 
-export default Typewriter;
+export default Typewriter

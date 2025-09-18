@@ -13,4 +13,4 @@ const ThemeSwitcher: FC = () => {
    )
 }
 
-export default ThemeSwitcher;
+export default ThemeSwitcher
