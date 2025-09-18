@@ -43,7 +43,7 @@ export const useVerifyAuthStatus = (token: string | null) => {
          return data;
       },
       enabled: !!token,
-      retry: 1
+      retry: false
    })
 };
 
