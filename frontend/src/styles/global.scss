@@ -36,7 +36,7 @@
 .ant-statistic-title, .ant-statistic-content, .ant-btn, .ant-card-head-title, .ant-form-item-label label, .ant-upload-text, .ant-upload-hint,
 .ant-input, .ant-segmented, .ant-checkbox-label, .ant-picker, .ant-picker-panel, .ant-picker-header-view, .ant-picker-footer,
 .ant-picker-now-btn, .ant-input-number, .ant-input-number-button, p, .ant-upload-list-item-name, .ant-upload-icon span, 
-.ant-input-affix-wrapper, .ant-input-password-icon {
+.ant-input-affix-wrapper, .ant-input-password-icon, .anticon-ellipsis {
    &:not(.failed-response, .success-response) {
       background-color: var(--bg-color) !important;
       color: var(--text-color) !important;
