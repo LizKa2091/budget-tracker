@@ -1,3 +1,5 @@
+export type AuthMode = 'login' | 'register' | 'forgot';
+
 export interface IRegisterResponse {
    message: string;
 };

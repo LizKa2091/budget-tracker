@@ -1,21 +1,20 @@
-import { Button, Flex, Form, Input } from 'antd';
 import { useState, type FC } from 'react';
+import { Button, Flex, Form, Input } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
+import Typewriter from './Typewriter';
 import { useAIAdvice } from '../model/useAIAdvice';
 import type { IChartItem } from '../../../shared/types/charts';
 import type { IExpensesByCategories } from '../../../shared/types/expenses';
-import Typewriter from './Typewriter';
+import { words } from '../lib/categoryWords';
 import styles from './WhatIfCutForm.module.scss';
 
 interface ICutFormData {
    value?: string;
-};
+}
 
 interface IWhatIfCutFormProps {
    chartData: IChartItem[] | IExpensesByCategories[];
-};
-
-const words: string[] = ['продукты', 'развлечения', 'подписки', 'мобильную связь', 'косметику']
+}
 
 const WhatIfCutForm: FC<IWhatIfCutFormProps> = ({ chartData }) => {
    const [AIResponse, setAIResponse] = useState<string>('');
@@ -51,4 +50,4 @@ const WhatIfCutForm: FC<IWhatIfCutFormProps> = ({ chartData }) => {
    )
 }
 
-export default WhatIfCutForm;
+export default WhatIfCutForm

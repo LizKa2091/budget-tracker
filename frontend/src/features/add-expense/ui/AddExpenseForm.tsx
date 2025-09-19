@@ -1,6 +1,6 @@
-import { Dayjs } from 'dayjs';
 import { type FC } from 'react';
 import { Button, DatePicker, Flex, Form, Input, InputNumber } from 'antd';
+import { Dayjs } from 'dayjs';
 import { Controller, useForm } from 'react-hook-form';
 import { useChartStore } from '../../../shared/store-hooks/useChartStore';
 
@@ -10,7 +10,7 @@ interface IFormData {
    date: Dayjs;
    title: string;
    amount: number;
-};
+}
 
 interface IAddExpenseFormProps {
    chartId: number;
@@ -60,4 +60,4 @@ const AddExpenseForm: FC<IAddExpenseFormProps> = ({ chartId }) => {
    )
 }
 
-export default AddExpenseForm;
+export default AddExpenseForm

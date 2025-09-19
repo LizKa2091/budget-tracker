@@ -1,5 +1,5 @@
+import { type FC } from 'react';
 import { Checkbox, Flex, Segmented, type CheckboxChangeEvent } from 'antd';
-import { type FC } from 'react'
 import type { ChartMode } from '../../../shared/types/charts';
 
 interface IChartModeSwitcherProps {
@@ -8,7 +8,7 @@ interface IChartModeSwitcherProps {
    allCategories: string[];
    categoriesToShow: string[];
    setCategoriesToShow: (values: string[]) => void;
-};
+}
 
 const ChartModeSwitcher: FC<IChartModeSwitcherProps> = ({ displayMode, setDisplayMode, allCategories, categoriesToShow, setCategoriesToShow }) => {
    const handleSegmentedChange = (value: string) => {
@@ -27,7 +27,6 @@ const ChartModeSwitcher: FC<IChartModeSwitcherProps> = ({ displayMode, setDispla
       }
 
       setCategoriesToShow(updatedCategories);
-      console.log(updatedCategories);
    }
 
    return (
@@ -48,4 +47,4 @@ const ChartModeSwitcher: FC<IChartModeSwitcherProps> = ({ displayMode, setDispla
    )
 }
 
-export default ChartModeSwitcher;
+export default ChartModeSwitcher

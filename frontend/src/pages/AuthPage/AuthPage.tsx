@@ -21,4 +21,4 @@ const AuthPage: FC = () => {
    )
 }
 
-export default AuthPage;
+export default AuthPage

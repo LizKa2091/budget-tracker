@@ -20,4 +20,4 @@ const Notifications: FC = () => {
    )
 }
 
-export default Notifications;
+export default Notifications

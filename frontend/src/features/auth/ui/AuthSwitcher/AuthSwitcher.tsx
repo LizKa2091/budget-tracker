@@ -1,11 +1,10 @@
+import { useState, type FC } from 'react';
 import { Button, Flex } from 'antd';
-import { useState, type FC } from 'react'
 import LoginForm from '../LoginForm/LoginForm';
 import RegisterForm from '../RegisterForm/RegisterForm';
 import ForgotPassForm from '../ForgotPassForm/ForgotPassForm';
+import type { AuthMode } from '../../authTypes';
 import styles from './AuthSwitcher.module.scss';
-
-type AuthMode = 'login' | 'register' | 'forgot';
 
 const AuthSwitcher: FC = () => {
    const [authMode, setAuthMode] = useState<AuthMode>('login');

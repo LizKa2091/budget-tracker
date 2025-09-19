@@ -6,11 +6,11 @@ interface INotificationContext {
    addNotification: (title: string, message: string, type: 'error' | 'warning' | 'info') => void;
    removeNotification: (id: string) => void;
    clearAllNotifications: () => void;
-};
+}
 
 interface INotificationProviderProps {
    children: ReactNode;
-};
+}
 
 const NotificationContext = createContext<INotificationContext | undefined>(undefined);
 
@@ -48,7 +48,7 @@ const NotificationProvider: FC<INotificationProviderProps> = ({ children }) => {
          {children}
       </NotificationContext.Provider>
    )
-};
+}
 
 const useNotifications = () => {
    const context = useContext(NotificationContext);
@@ -59,4 +59,4 @@ const useNotifications = () => {
 
 const NotificationExports = { NotificationContext, NotificationProvider, useNotifications };
 
-export default NotificationExports;
+export default NotificationExports

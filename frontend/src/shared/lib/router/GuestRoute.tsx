@@ -24,4 +24,4 @@ const GuestRoute: FC<IGuestRouteProps> = ({ children }) => {
    return children;
 }
 
-export default GuestRoute;
+export default GuestRoute

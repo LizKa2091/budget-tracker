@@ -25,6 +25,11 @@ const tokenAxios = axios.create({
    withCredentials: true
 });
 
+const refreshAxios = axios.create({
+  baseURL: baseUrl,
+  withCredentials: true,
+});
+
 const handleAxiosError = (err: unknown): never => {
    if (isAxiosError(err)) {
       const axiosErr = err as AxiosError<IAxiosErrorResponse>;
@@ -83,7 +88,7 @@ tokenAxios.interceptors.response.use(
          err.config._retry = true;
 
          try {
-            const { data } = await tokenAxios.post<IRefreshResponse>('/refresh');
+            const { data } = await refreshAxios.post<IRefreshResponse>('/refresh');
             localStorage.setItem('token', data.token);
 
             err.config.headers = { ...err.config.headers, Authorization: `Bearer ${data.token}` };

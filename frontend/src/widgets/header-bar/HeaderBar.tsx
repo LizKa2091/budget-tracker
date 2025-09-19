@@ -1,6 +1,6 @@
 import { useMemo, type FC } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { Button, Flex, Layout, Menu } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
 import ThemeSwitcher from '../../features/theme-switcher/ui/ThemeSwitcher';
 import AuthExports from '../../shared/context/AuthContext';
 import styles from './HeaderBar.module.scss';
@@ -50,4 +50,4 @@ const HeaderBar: FC = () => {
    )
 }
 
-export default HeaderBar;
+export default HeaderBar

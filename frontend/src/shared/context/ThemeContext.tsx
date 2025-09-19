@@ -5,7 +5,7 @@ type theme = 'light' | 'dark';
 interface IThemeContextProps {
    theme: theme;
    switchTheme: () => void;
-};
+}
 
 interface IThemeProviderProps {
    children: ReactNode;
@@ -30,15 +30,15 @@ const ThemeProvider: FC<IThemeProviderProps> = ({ children }) => {
          {children}
       </ThemeContext.Provider>
    )
-};
+}
 
 const useTheme = () => {
    const context = useContext(ThemeContext);
 
    if (!context) throw new Error('useTheme должен использоваться внутри ThemeProvider');
    return context;
-};
+}
 
 const ThemeExports = { ThemeContext, ThemeProvider, useTheme };
 
-export default ThemeExports;
+export default ThemeExports

@@ -68,4 +68,4 @@ const RegisterForm: FC = () => {
    )
 }
 
-export default RegisterForm;
+export default RegisterForm

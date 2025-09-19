@@ -7,7 +7,7 @@ interface INotificationItemProps {
    title: string;
    message: string;
    type: 'error' | 'warning' | 'info';
-};
+}
 
 const NotificationItem: FC<INotificationItemProps> = ({ id, title, message, type }) => {
    const { removeNotification } = NotificationExports.useNotifications();
@@ -33,4 +33,4 @@ const NotificationItem: FC<INotificationItemProps> = ({ id, title, message, type
    )
 }
 
-export default NotificationItem;
+export default NotificationItem

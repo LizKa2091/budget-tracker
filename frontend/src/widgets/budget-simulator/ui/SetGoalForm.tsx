@@ -7,11 +7,11 @@ import { useAIAdvice } from '../model/useAIAdvice';
 
 interface IGoalFormData {
    goalValue: string;
-};
+}
 
 interface ISetGoalFormProps {
    chartData: IChartItem[] | IExpensesByCategories[]
-};
+}
 
 const SetGoalForm: FC<ISetGoalFormProps> = ({ chartData }) => {
    const [AIResponse, setAIResponse] = useState<string>('');
@@ -53,4 +53,4 @@ const SetGoalForm: FC<ISetGoalFormProps> = ({ chartData }) => {
    )
 }
 
-export default SetGoalForm;
+export default SetGoalForm

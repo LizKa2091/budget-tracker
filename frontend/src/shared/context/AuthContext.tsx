@@ -1,6 +1,6 @@
-import { createContext, useContext, useState, type FC, type ReactNode } from 'react';
-import type { IForgotPasswordResponse, ILoginRequestResponse, ILogoutResponse, IRegisterResponse, IResetPasswordResponse, IVerifyAuthStatusResponse } from '../../features/auth/authTypes';
+import { createContext, useContext, useEffect, useState, type FC, type ReactNode } from 'react';
 import { useForgotPassword, useLoginUser, useLogoutUser, useRegisterUser, useResetPassword, useVerifyAuthStatus } from '../../features/auth/model/useAuth';
+import type { IForgotPasswordResponse, ILoginRequestResponse, ILogoutResponse, IRegisterResponse, IResetPasswordResponse, IVerifyAuthStatusResponse } from '../../features/auth/authTypes';
 
 interface IAuthContext {
    isAuthed: boolean | null;
@@ -16,11 +16,11 @@ interface IAuthContext {
    logout: () => Promise<ILogoutResponse | Error>;
    isLogouting: boolean;
    checkLoginStatus: () => Promise<IVerifyAuthStatusResponse>;
-};
+}
 
 interface IAuthProvider {
    children: ReactNode;
-};
+}
 
 const AuthContext  = createContext<IAuthContext | undefined>(undefined);
 
@@ -33,7 +33,12 @@ const AuthContextProvider: FC<IAuthProvider> = ({ children })=> {
    const { mutateAsync: forgotMutate, isPending: isForgetting } = useForgotPassword();
    const { mutateAsync: resetMutate, isPending: isResetting } = useResetPassword();
    const { mutateAsync: logoutMutate, isPending: isLogouting } = useLogoutUser();
-   const { refetch: refecthAuth } = useVerifyAuthStatus(token);
+   const { data, error, refetch: refetchAuth } = useVerifyAuthStatus(token);
+
+   useEffect(() => {
+      if (data) setIsAuthed(true);
+      else if (error) clearAuthData();
+   }, [data, error])
 
    const clearAuthData = (): void => {
       localStorage.removeItem('token');
@@ -121,7 +126,7 @@ const AuthContextProvider: FC<IAuthProvider> = ({ children })=> {
          throw new Error('нет токена');
       }
       
-      const result = await refecthAuth();
+      const result = await refetchAuth();
 
       if (result.error || !result.data) {
          clearAuthData();
@@ -138,7 +143,7 @@ const AuthContextProvider: FC<IAuthProvider> = ({ children })=> {
          {children}
       </AuthContext.Provider>
    );
-};
+}
 
 const useAuthContext = () => {
    const context = useContext(AuthContext);

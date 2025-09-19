@@ -1,11 +1,11 @@
 import { useEffect, type FC, type JSX } from 'react';
-import AuthExports from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
+import AuthExports from '../../context/AuthContext';
 import NotificationExports from '../../context/NotificationContext';
 
 interface IAuthedUserRouteProps {
    children: JSX.Element;
-};
+}
 
 const AuthedUserRoute: FC<IAuthedUserRouteProps> = ({ children }) => {
    const { token } = AuthExports.useAuthContext();
@@ -25,4 +25,4 @@ const AuthedUserRoute: FC<IAuthedUserRouteProps> = ({ children }) => {
    return children;
 }
 
-export default AuthedUserRoute;
+export default AuthedUserRoute

@@ -1,6 +1,6 @@
 import { useEffect, useState, type FC } from 'react';
-import { Link } from 'react-router-dom';
 import { Button, Flex, Form, Input } from 'antd';
+import { Link } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
 import AuthExports from '../../../../shared/context/AuthContext';
 import type { IFormMessage, IResetPassFormData } from '../../authTypes';
