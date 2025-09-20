@@ -123,6 +123,20 @@ app.post('/login', (req: Request, res: Response): void => {
    res.json({ token: accessToken, message: 'Успешный вход' });
 });
 
+app.get('/me', authenticateToken, (req: Request, res: Response): void => {
+   const user = (req as any).user;
+
+   if (!user) {
+      res.status(401).json({ message: 'Не авторизован' });
+      return;
+   }
+
+   res.json({
+      email: user.email,
+      name: user.name,
+   });
+});
+
 app.post('/refresh', (req: Request, res: Response): void => {
    const tokenFromCookie = req.cookies?.refreshToken;
 
