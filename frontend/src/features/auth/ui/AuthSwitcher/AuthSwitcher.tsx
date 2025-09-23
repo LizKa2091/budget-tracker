@@ -23,21 +23,22 @@ const AuthSwitcher: FC = () => {
    }
 
    return (
-      <Flex vertical gap='large' className='outlined-container'>
+      <Flex vertical align='center' gap='large' className='outlined-container'>
          {authForm()}
-
-         {authMode === 'login' &&
-            <Flex gap='middle'>
-               <Button onClick={() => setAuthMode('register')} className={styles.linkButton}>Нет аккаунта? Зарегистрироваться</Button>
-               <Button onClick={() => setAuthMode('forgot')} className={styles.linkButton}>Восстановить пароль</Button>
-            </Flex>
-         }
-         {authMode === 'register' &&
-            <Button onClick={() => setAuthMode('login')} className={styles.linkButton}>Уже есть аккаунт? Войти</Button>
-         }
-         {authMode === 'forgot' &&
-            <Button onClick={() => setAuthMode('login')} className={styles.linkButton}>Вернуться ко входу в аккаунт</Button>
-         }
+         <Flex gap='middle' className={styles.buttonsContainer}>
+            {authMode === 'login' && 
+               <>
+                  <Button onClick={() => setAuthMode('register')} className={styles.linkButton}>Нет аккаунта? Зарегистрироваться</Button>
+                  <Button onClick={() => setAuthMode('forgot')} className={styles.linkButton}>Восстановить пароль</Button>
+               </>
+            }
+            {authMode === 'register' &&
+               <Button onClick={() => setAuthMode('login')} className={styles.linkButton}>Уже есть аккаунт? Войти</Button>
+            }
+            {authMode === 'forgot' &&
+               <Button onClick={() => setAuthMode('login')} className={styles.linkButton}>Вернуться ко входу в аккаунт</Button>
+            }
+         </Flex>
       </Flex>
    )
 }
