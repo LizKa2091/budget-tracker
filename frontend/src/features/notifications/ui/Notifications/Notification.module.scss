@@ -2,7 +2,8 @@
    position: absolute;
    top: 1dvw;
    right: 1dvw;
-   max-width: 15dvw;
+   max-width: 50dvw;
    max-height: calc(100dvh - 1dvw);
+   overflow-x: hidden;
    overflow-y: auto;
 }
