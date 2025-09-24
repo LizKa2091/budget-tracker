@@ -1,6 +1,6 @@
-import type { FC } from 'react'
+import type { FC } from 'react';
 import { Layout, Flex } from 'antd';
-import ChartSlots from '../../features/chart-slots/ChartSlots';
+import ChartSlots from '../../features/chart-slots/ui/ChartSlots';
 import HeaderBar from '../../widgets/header-bar/HeaderBar';
 import Notifications from '../../features/notifications/ui/Notifications/Notification';
 
@@ -11,13 +11,13 @@ const ChartSlotsPage: FC = () => {
       <Layout>
          <HeaderBar />
          <Content>
-            <Flex className='container'>
+            <Flex className="container">
                <ChartSlots />
             </Flex>
          </Content>
          <Notifications />
       </Layout>
-   )
-}
+   );
+};
 
-export default ChartSlotsPage
+export default ChartSlotsPage;
