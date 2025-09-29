@@ -9,26 +9,36 @@ import { useDashboard } from '../model/useDashboard';
 const { Content } = Layout;
 
 const DashBoardPage: FC = () => {
-   const { displayMode, setDisplayMode, allCategories, categoriesToShow, setCategoriesToShow, isInvalidId, paramsId } = useDashboard();
+   const {
+      displayMode,
+      setDisplayMode,
+      allCategories,
+      categoriesToShow,
+      setCategoriesToShow,
+      isInvalidId,
+      paramsId
+   } = useDashboard();
 
    return (
       <Layout>
          <HeaderBar />
          <Content>
-            <Flex className='container'>
+            <Flex className="container" wrap="wrap">
                {isInvalidId ? (
                   <span>Неверный id диаграммы</span>
                ) : (
                   <>
-                     <ChartModeSwitcher 
-                        displayMode={displayMode} setDisplayMode={setDisplayMode}
-                        allCategories={allCategories} 
-                        categoriesToShow={categoriesToShow} setCategoriesToShow={setCategoriesToShow}
+                     <ChartModeSwitcher
+                        displayMode={displayMode}
+                        setDisplayMode={setDisplayMode}
+                        allCategories={allCategories}
+                        categoriesToShow={categoriesToShow}
+                        setCategoriesToShow={setCategoriesToShow}
                      />
-                     <BudgetChart 
-                        chartId={+paramsId!} 
-                        displayMode={displayMode} 
-                        categoriesToShow={categoriesToShow} 
+                     <BudgetChart
+                        chartId={+paramsId!}
+                        displayMode={displayMode}
+                        categoriesToShow={categoriesToShow}
                      />
                   </>
                )}
@@ -36,7 +46,7 @@ const DashBoardPage: FC = () => {
          </Content>
          <Notifications />
       </Layout>
-   )
-}
+   );
+};
 
-export default DashBoardPage
+export default DashBoardPage;

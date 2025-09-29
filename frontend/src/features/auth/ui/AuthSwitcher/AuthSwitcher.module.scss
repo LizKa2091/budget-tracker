@@ -2,3 +2,9 @@
    border: 0;
    background-color: inherit;
 }
+
+@media (max-width: 767px) {
+   .buttonsContainer {
+      flex-direction: column;
+   }
+}

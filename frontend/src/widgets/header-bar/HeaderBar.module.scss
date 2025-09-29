@@ -6,6 +6,7 @@
    h1 {
       color: $title;
       width: 25%;
+      min-width: 95px;
    }
 }
 .menu {
@@ -13,4 +14,17 @@
 }
 .logoutButton {
    border: 0;
+}
+
+@media (max-width: 1023px) {
+   .container h1 {
+      font-size: 1.4rem;
+   }
+}
+
+@media (max-width: 767px) {
+   .container h1 {
+      font-size: 1.15rem;
+      min-width: 130px;
+   }
 }

@@ -1,0 +1,66 @@
+import type { FC } from 'react';
+import { Button, Card, Flex } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
+import { useChartStore } from '../../../shared/store-hooks/useChartStore';
+import type { IChartSlot } from '../../../shared/types/charts';
+import styles from './ChartSlots.module.scss';
+
+const ChartSlots: FC = () => {
+   const { charts, removeChart } = useChartStore();
+   const chartsArr = Array.isArray(charts) ? charts : [];
+
+   const savedCharts = chartsArr.filter(
+      (chart) => chart.data && chart.data.length > 0
+   );
+
+   const handleDelChart = (chartId: number): void => {
+      removeChart(chartId);
+   };
+
+   if (savedCharts.length === 0) {
+      return (
+         <Flex vertical gap="large">
+            <h2>У вас пока нет сохранённых диаграмм</h2>
+            <Link to="/import-pdf">
+               Импортировать выписку за месяц в pdf формате
+            </Link>
+         </Flex>
+      );
+   }
+
+   return (
+      <Flex vertical gap="middle">
+         <h2>Ваши сохранённые слоты</h2>
+         <Flex wrap gap="large" className={styles.chartsContainer}>
+            {savedCharts.map((chart: IChartSlot) => (
+               <Card
+                  key={chart.id}
+                  title={chart.name}
+                  extra={
+                     <Button
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() => handleDelChart(chart.id)}
+                        aria-label="Удалить"
+                        title="Удалить"
+                     />
+                  }
+               >
+                  <Flex vertical>
+                     {chart.data &&
+                        `Дата первой траты: ${
+                           chart.data[0].date || 'Неизвестно'
+                        }`}
+                     <Link to={`/dashboard/${chart.id}`}>
+                        Перейти к диаграмме
+                     </Link>
+                  </Flex>
+               </Card>
+            ))}
+         </Flex>
+      </Flex>
+   );
+};
+
+export default ChartSlots;
