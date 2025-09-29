@@ -64,7 +64,9 @@ const AddExpenseForm: FC<IAddExpenseFormProps> = ({ chartId }) => {
                      name="title"
                      control={control}
                      rules={{ required: true }}
-                     render={({ field }) => <Input {...field} />}
+                     render={({ field }) => (
+                        <Input {...field} className={styles.input} />
+                     )}
                   />
                </Form.Item>
                <Form.Item
@@ -78,7 +80,10 @@ const AddExpenseForm: FC<IAddExpenseFormProps> = ({ chartId }) => {
                      control={control}
                      rules={{ required: true }}
                      render={({ field }) => (
-                        <DatePicker className="input" {...field} />
+                        <DatePicker
+                           className={styles.input + ' input'}
+                           {...field}
+                        />
                      )}
                   />
                </Form.Item>
@@ -96,7 +101,13 @@ const AddExpenseForm: FC<IAddExpenseFormProps> = ({ chartId }) => {
                         validate: (val: number) =>
                            val >= 1 || 'Сумма должна быть больше или равна 1'
                      }}
-                     render={({ field }) => <InputNumber {...field} min={1} />}
+                     render={({ field }) => (
+                        <InputNumber
+                           {...field}
+                           className={styles.input}
+                           min={1}
+                        />
+                     )}
                   />
                </Form.Item>
                <Form.Item
@@ -109,7 +120,9 @@ const AddExpenseForm: FC<IAddExpenseFormProps> = ({ chartId }) => {
                      name="category"
                      control={control}
                      rules={{ required: true }}
-                     render={({ field }) => <Input {...field} />}
+                     render={({ field }) => (
+                        <Input {...field} className={styles.input} />
+                     )}
                   />
                </Form.Item>
                <Button htmlType="submit">Добавить</Button>
