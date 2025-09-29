@@ -1,31 +1,40 @@
 import { Button, Flex, Form, InputNumber } from 'antd';
-import { useState, type FC } from 'react'
+import { useState, type FC } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useAIAdvice } from '../model/useAIAdvice';
 import type { IChartItem } from '../../../shared/types/charts';
 import type { IExpensesByCategories } from '../../../shared/types/expenses';
-import { useAIAdvice } from '../model/useAIAdvice';
+import styles from './SetGoalForm.module.scss';
 
 interface IGoalFormData {
    goalValue: string;
 }
 
 interface ISetGoalFormProps {
-   chartData: IChartItem[] | IExpensesByCategories[]
+   chartData: IChartItem[] | IExpensesByCategories[];
 }
 
 const SetGoalForm: FC<ISetGoalFormProps> = ({ chartData }) => {
    const [AIResponse, setAIResponse] = useState<string>('');
-   const { handleSubmit, control, formState: { errors }, trigger } = useForm<IGoalFormData>();
+   const {
+      handleSubmit,
+      control,
+      formState: { errors },
+      trigger
+   } = useForm<IGoalFormData>();
 
    const { mutateAsync, error } = useAIAdvice();
 
    const onSubmit = async (formData: IGoalFormData): Promise<void> => {
       try {
-         const response = await mutateAsync({ promptType: 'setGoal', value: formData.goalValue, expenses: chartData });
+         const response = await mutateAsync({
+            promptType: 'setGoal',
+            value: formData.goalValue,
+            expenses: chartData
+         });
 
          setAIResponse(response.answer.replaceAll('*', ''));
-      }
-      catch (error) {
+      } catch (error) {
          console.error(error);
       }
    };
@@ -37,20 +46,34 @@ const SetGoalForm: FC<ISetGoalFormProps> = ({ chartData }) => {
    };
 
    return (
-      <Flex vertical align='center' gap='small'>
+      <Flex vertical align="center" gap="small">
          <p>Цель по сбережению</p>
          <Form onFinish={onFinish}>
-            <Flex vertical align='center'>
-               <Form.Item label='Введите сумму' required validateStatus={errors.goalValue ? 'error' : ''} help={errors.goalValue && 'Обязательное поле'}>
-                  <Controller name='goalValue' control={control} rules={{ required: true }} render={({ field }) => <InputNumber {...field} />} />
+            <Flex vertical align="center">
+               <Form.Item
+                  label="Введите сумму"
+                  required
+                  validateStatus={errors.goalValue ? 'error' : ''}
+                  help={errors.goalValue && 'Обязательное поле'}
+               >
+                  <Controller
+                     name="goalValue"
+                     control={control}
+                     rules={{ required: true }}
+                     render={({ field }) => (
+                        <InputNumber {...field} className={styles.inputGoal} />
+                     )}
+                  />
                </Form.Item>
-               <Button htmlType='submit' type='default'>Поставить цель</Button>
+               <Button htmlType="submit" type="default">
+                  Поставить цель
+               </Button>
                {AIResponse && <p>{AIResponse}</p>}
                {error && <p>Ошибка: {error.message}</p>}
             </Flex>
          </Form>
       </Flex>
-   )
-}
+   );
+};
 
-export default SetGoalForm
+export default SetGoalForm;
