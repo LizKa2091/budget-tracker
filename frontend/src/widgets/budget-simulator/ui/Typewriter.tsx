@@ -10,25 +10,24 @@ const Typewriter: FC<ITypewriterProps> = ({ words }) => {
    const [isTyping, setIsTyping] = useState(true);
 
    useEffect(() => {
-      let timeout: NodeJS.Timeout;
+      let timeout: ReturnType<typeof setTimeout>;
 
       if (isTyping) {
          if (currentText.length < words[currentIndex].length) {
             timeout = setTimeout(() => {
-               setCurrentText(words[currentIndex].substring(0, currentText.length + 1));
+               setCurrentText(
+                  words[currentIndex].substring(0, currentText.length + 1)
+               );
             }, 250);
-         }
-         else {
+         } else {
             timeout = setTimeout(() => setIsTyping(false), 500);
          }
-      } 
-      else {
+      } else {
          if (currentText.length > 0) {
             timeout = setTimeout(() => {
                setCurrentText(currentText.substring(0, currentText.length - 1));
             }, 50);
-         } 
-         else {
+         } else {
             setIsTyping(true);
             setCurrentIndex((prevIndex) => (prevIndex + 1) % words.length);
          }
@@ -40,4 +39,4 @@ const Typewriter: FC<ITypewriterProps> = ({ words }) => {
    return <span>{currentText}</span>;
 };
 
-export default Typewriter
+export default Typewriter;
