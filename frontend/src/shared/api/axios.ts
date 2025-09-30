@@ -26,7 +26,7 @@ const baseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4000';
 const safeErrMessage = 'Ошибка на сервере';
 
 const createAxios = (options: AxiosRequestConfig = {}): AxiosInstance => {
-   axios.create({
+   return axios.create({
       baseURL: baseUrl,
       ...options
    });
@@ -48,18 +48,20 @@ const handleAxiosError = (err: unknown): never => {
    throw new Error(safeErrMessage);
 };
 
-importPdfAxios.interceptors.request.use((config: { data: FormData }) => {
-   const configData = config.data as { file?: File };
+importPdfAxios.interceptors.request.use(
+   (config: InternalAxiosRequestConfig) => {
+      const configData = config.data as { file?: File };
 
-   if (configData?.file instanceof File) {
-      const formData = new FormData();
-      formData.append('pdfFile', configData.file);
-      config.data = formData;
+      if (configData?.file instanceof File) {
+         const formData = new FormData();
+         formData.append('pdfFile', configData.file);
+         config.data = formData;
+      }
+      return config;
    }
-   return config;
-});
+);
 importPdfAxios.interceptors.response.use(
-   (res: { data: IExpenseItem[] }) => {
+   (res: AxiosResponse) => {
       res.data = extractExpFromJson(res.data) as IExpenseItem[];
       return res;
    },
@@ -94,8 +96,16 @@ tokenAxios.interceptors.response.use(
       return res;
    },
    async (err: AxiosError<IRefreshResponse, AxiosRequestConfigWithRetry>) => {
-      if (err.response?.status === 401 && !err.config._retry) {
-         err.config._retry = true;
+      const initialConfig = err.config as
+         | AxiosRequestConfigWithRetry
+         | undefined;
+
+      if (
+         err.response?.status === 401 &&
+         initialConfig &&
+         initialConfig._retry
+      ) {
+         initialConfig._retry = true;
 
          try {
             const { data } = await refreshAxios.post<IRefreshResponse>(
@@ -103,11 +113,13 @@ tokenAxios.interceptors.response.use(
             );
             localStorage.setItem('token', data.token);
 
-            err.config.headers = {
-               ...err.config.headers,
-               Authorization: `Bearer ${data.token}`
-            };
-            return tokenAxios(err.config);
+            if (initialConfig.headers) {
+               initialConfig.headers.set?.(
+                  'Authorization',
+                  `Bearer ${data.token}`
+               );
+            }
+            return tokenAxios(initialConfig);
          } catch (error) {
             localStorage.removeItem('token');
 
