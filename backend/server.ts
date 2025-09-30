@@ -11,20 +11,23 @@ import cookieParser from 'cookie-parser';
 dotenv.config();
 
 const app = express();
+const port = Number(process.env.PORT || 4000);
 
-app.use(cors({
-   origin: 'http://localhost:5173',
-   credentials: true
-}));
+app.use(
+   cors({
+      origin: true,
+      credentials: true
+   })
+);
 
 app.use(express.json());
 app.use(cookieParser());
 
-const upload = multer({ dest: path.resolve(__dirname, 'uploads') });
+const upload = multer({ dest: path.resolve(__dirname, '/tmp/uploads') });
 
 const API_KEY = process.env.PDFCO_API_KEY ?? '';
 
-const DESTINATION_FILE = path.resolve(__dirname, 'uploads', 'result.json');
+const DESTINATION_FILE = path.resolve(__dirname, '/tmp/uploads', 'result.json');
 
 interface IUser {
    email: string;
@@ -47,7 +50,11 @@ app.get('/', (req, res) => {
    res.send('Server is running. Use POST /upload to process PDF.');
 });
 
-const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
+const authenticateToken = (
+   req: Request,
+   res: Response,
+   next: NextFunction
+): void => {
    const authHeader = req.headers['authorization'];
    const token = authHeader && authHeader.split(' ')[1];
 
@@ -61,15 +68,19 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction): voi
       return;
    }
 
-   jwt.verify(token, ACCESS_SECRET, (err: VerifyErrors | null, decoded: string | JwtPayload | undefined) => {
-      if (err || !decoded || typeof decoded === 'string') {
-         res.status(403).json({ message: 'Неверный токен' });
-         return;
-      }
+   jwt.verify(
+      token,
+      ACCESS_SECRET,
+      (err: VerifyErrors | null, decoded: string | JwtPayload | undefined) => {
+         if (err || !decoded || typeof decoded === 'string') {
+            res.status(403).json({ message: 'Неверный токен' });
+            return;
+         }
 
-      (req as any).user = decoded;
-      next();
-   });
+         (req as any).user = decoded;
+         next();
+      }
+   );
 };
 
 app.post('/register', (req: Request, res: Response): void => {
@@ -81,7 +92,9 @@ app.post('/register', (req: Request, res: Response): void => {
    }
 
    if (users[email]) {
-      res.status(400).json({ message: 'Пользователь уже существует с такой почтой' });
+      res.status(400).json({
+         message: 'Пользователь уже существует с такой почтой'
+      });
       return;
    }
 
@@ -104,11 +117,9 @@ app.post('/login', (req: Request, res: Response): void => {
       { expiresIn: '15m' }
    );
 
-   const refreshToken = jwt.sign(
-      { email: user.email },
-      REFRESH_SECRET!,
-      { expiresIn: '7d' }
-   );
+   const refreshToken = jwt.sign({ email: user.email }, REFRESH_SECRET!, {
+      expiresIn: '7d'
+   });
 
    users[email].refreshToken = refreshToken;
 
@@ -117,7 +128,7 @@ app.post('/login', (req: Request, res: Response): void => {
       secure: false,
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: '/',
+      path: '/'
    });
 
    res.json({ token: accessToken, message: 'Успешный вход' });
@@ -133,7 +144,7 @@ app.get('/me', authenticateToken, (req: Request, res: Response): void => {
 
    res.json({
       email: user.email,
-      name: user.name,
+      name: user.name
    });
 });
 
@@ -145,40 +156,48 @@ app.post('/refresh', (req: Request, res: Response): void => {
       return;
    }
 
-   jwt.verify(tokenFromCookie, REFRESH_SECRET, (err: jwt.VerifyErrors | null, decoded: JwtPayload | string | undefined) => {
-      if (err || !decoded || typeof decoded === 'string') {
-         res.status(403).json({ message: 'Неверный refreshToken' });
-         return;
+   jwt.verify(
+      tokenFromCookie,
+      REFRESH_SECRET,
+      (
+         err: jwt.VerifyErrors | null,
+         decoded: JwtPayload | string | undefined
+      ) => {
+         if (err || !decoded || typeof decoded === 'string') {
+            res.status(403).json({ message: 'Неверный refreshToken' });
+            return;
+         }
+
+         const { email } = decoded as JwtPayload;
+         const user = users[email];
+
+         if (!user || user.refreshToken !== tokenFromCookie) {
+            res.status(403).json({ message: 'refreshToken не совпадает' });
+            return;
+         }
+
+         const newRefresh = jwt.sign({ email }, REFRESH_SECRET, {
+            expiresIn: '7d'
+         });
+         user.refreshToken = newRefresh;
+
+         const newAccess = jwt.sign(
+            { email: user.email, name: user.name },
+            ACCESS_SECRET,
+            { expiresIn: '15m' }
+         );
+
+         res.cookie('refreshToken', newRefresh, {
+            httpOnly: true,
+            sameSite: 'lax',
+            secure: false,
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            path: '/'
+         });
+
+         res.json({ token: newAccess });
       }
-
-      const { email } = decoded as JwtPayload;
-      const user = users[email];
-
-      if (!user || user.refreshToken !== tokenFromCookie) {
-         res.status(403).json({ message: 'refreshToken не совпадает' });
-         return;
-      }
-
-      const newRefresh = jwt.sign({ email }, REFRESH_SECRET, { expiresIn: '7d' });
-      user.refreshToken = newRefresh;
-
-
-      const newAccess = jwt.sign(
-         { email: user.email, name: user.name },
-         ACCESS_SECRET,
-         { expiresIn: '15m' }
-      );
-
-      res.cookie('refreshToken', newRefresh, {
-         httpOnly: true,
-         sameSite: 'lax',
-         secure: false,
-         maxAge: 7 * 24 * 60 * 60 * 1000,
-         path: '/',
-      });
-
-      res.json({ token: newAccess });
-   });
+   );
 });
 
 app.post('/logout', authenticateToken, (req: Request, res: Response): void => {
@@ -196,7 +215,7 @@ app.post('/logout', authenticateToken, (req: Request, res: Response): void => {
       httpOnly: true,
       sameSite: 'lax',
       secure: false,
-      path: '/',
+      path: '/'
    });
 
    res.json({ message: 'Успешный выход' });
@@ -206,7 +225,7 @@ const passwordResetTokens: Record<string, string> = {};
 
 function generateResetToken() {
    return Math.random().toString(36).substring(2) + Date.now().toString(36);
-};
+}
 
 app.post('/forgot-password', (req: Request, res: Response) => {
    const { email } = req.body;
@@ -219,9 +238,9 @@ app.post('/forgot-password', (req: Request, res: Response) => {
    const resetToken = generateResetToken();
    passwordResetTokens[resetToken] = email;
 
-   res.json({ 
+   res.json({
       message: 'Токен для сброса пароля создан',
-      resetToken 
+      resetToken
    });
 });
 
@@ -247,63 +266,79 @@ app.post('/reset-password', (req: Request, res: Response) => {
    res.json({ message: 'Пароль успешно сброшен' });
 });
 
-app.post('/upload', upload.single('pdfFile'), async (req: Request, res: Response) => {
-   try {
-      if (!req.file) {
-         return res.status(400).json({ error: 'Файл не передан' });
+app.post(
+   '/upload',
+   upload.single('pdfFile'),
+   async (req: Request, res: Response) => {
+      try {
+         if (!req.file) {
+            return res.status(400).json({ error: 'Файл не передан' });
+         }
+
+         const uploadedFilePath = req.file.path;
+         const fileName = req.file.originalname;
+
+         const presignedData = await getPresignedUrl(API_KEY, fileName);
+
+         await uploadFile(uploadedFilePath, presignedData.uploadUrl);
+         await convertPdfToJson(
+            API_KEY,
+            presignedData.fileUrl,
+            '',
+            '',
+            DESTINATION_FILE
+         );
+
+         const resultJson = fs.readFileSync(DESTINATION_FILE, 'utf8');
+         const parsedResult = JSON.parse(resultJson);
+
+         fs.unlink(uploadedFilePath, () => {});
+
+         res.json({ message: 'Файл успешно распознан', result: parsedResult });
+      } catch (e: any) {
+         console.error(e);
+         res.status(500).json({ error: e.message || 'unknown error' });
       }
-
-      const uploadedFilePath = req.file.path;
-      const fileName = req.file.originalname;
-
-      const presignedData = await getPresignedUrl(API_KEY, fileName);
-
-      await uploadFile(uploadedFilePath, presignedData.uploadUrl);
-      await convertPdfToJson(API_KEY, presignedData.fileUrl, '', '', DESTINATION_FILE);
-
-      const resultJson = fs.readFileSync(DESTINATION_FILE, 'utf8');
-      const parsedResult = JSON.parse(resultJson);
-
-      fs.unlink(uploadedFilePath, () => {});
-
-      res.json({ message: 'Файл успешно распознан', result: parsedResult });
-   } catch (e: any) {
-      console.error(e);
-      res.status(500).json({ error: e.message || 'unknown error' });
    }
-});
+);
 
 app.post('/chat', async (req: Request, res: Response) => {
    try {
       const { prompt, expenses } = req.body;
 
       if (!prompt || !expenses) {
-         return res.status(400).json({ error: 'prompt и expenses обязательны' });
+         return res
+            .status(400)
+            .json({ error: 'prompt и expenses обязательны' });
       }
 
       const openrouterApiKey = process.env.OPENROUTER_API_KEY;
       if (!openrouterApiKey) throw new Error('Нет ключа OpenRouter');
 
       const fullPrompt = `
-         Пользователь предоставил следующие расходы: ${JSON.stringify(expenses, null, 2)}.
+         Пользователь предоставил следующие расходы: ${JSON.stringify(
+            expenses,
+            null,
+            2
+         )}.
          Запрос пользователя: "${prompt}".
          Ответь кратко, с конкретными советами.
       `;
 
-      const aiResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-         method: 'POST',
-         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${openrouterApiKey}`
-         },
-         body: JSON.stringify({
-            model: "deepseek/deepseek-chat-v3-0324:free",
-            messages: [
-               { role: "user", content: fullPrompt }
-            ]
-         })
-      });
-
+      const aiResponse = await fetch(
+         'https://openrouter.ai/api/v1/chat/completions',
+         {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+               Authorization: `Bearer ${openrouterApiKey}`
+            },
+            body: JSON.stringify({
+               model: 'deepseek/deepseek-chat-v3-0324:free',
+               messages: [{ role: 'user', content: fullPrompt }]
+            })
+         }
+      );
 
       if (!aiResponse.ok) {
          const errorText = await aiResponse.text();
@@ -311,32 +346,36 @@ app.post('/chat', async (req: Request, res: Response) => {
       }
 
       const aiJson = await aiResponse.json();
-      const content = aiJson.choices?.[0]?.message?.content || 'Нет ответа от AI';
+      const content =
+         aiJson.choices?.[0]?.message?.content || 'Нет ответа от AI';
 
       res.json({ answer: content });
-
-   } 
-   catch (e: any) {
+   } catch (e: any) {
       res.status(500).json({ error: e.message || 'Ошибка AI анализа' });
    }
 });
 
-app.listen(4000, () => {
-  console.log('Server running on http://localhost:4000');
+app.listen(port, () => {
+   console.log(`Server running on port ${port}`);
 });
 
-function getPresignedUrl(apiKey: string, fileName: string): Promise<{ uploadUrl: string; fileUrl: string }> {
+function getPresignedUrl(
+   apiKey: string,
+   fileName: string
+): Promise<{ uploadUrl: string; fileUrl: string }> {
    return new Promise((resolve, reject) => {
-      const queryPath = `/v1/file/upload/get-presigned-url?contenttype=application/octet-stream&name=${encodeURIComponent(fileName)}`;
+      const queryPath = `/v1/file/upload/get-presigned-url?contenttype=application/octet-stream&name=${encodeURIComponent(
+         fileName
+      )}`;
       const options = {
          host: 'api.pdf.co',
          path: queryPath,
          method: 'GET',
-         headers: { 'x-api-key': apiKey },
+         headers: { 'x-api-key': apiKey }
       };
 
       https
-      .get(options, (response) => {
+         .get(options, (response) => {
             let data = '';
             response.on('data', (chunk) => (data += chunk));
             response.on('end', () => {
@@ -348,7 +387,7 @@ function getPresignedUrl(apiKey: string, fileName: string): Promise<{ uploadUrl:
                }
             });
          })
-      .on('error', (err) => reject(err));
+         .on('error', (err) => reject(err));
    });
 }
 
@@ -364,13 +403,24 @@ function uploadFile(localFilePath: string, uploadUrl: string): Promise<void> {
                method: 'PUT',
                hostname: options.hostname,
                path: options.pathname + options.search,
-               headers: { 'Content-Type': 'application/octet-stream', 'Content-Length': data.length },
+               headers: {
+                  'Content-Type': 'application/octet-stream',
+                  'Content-Length': data.length
+               }
             },
             (res) => {
-               if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+               if (
+                  res.statusCode &&
+                  res.statusCode >= 200 &&
+                  res.statusCode < 300
+               ) {
                   resolve();
                } else {
-                  reject(new Error(`Failed to upload file, status code: ${res.statusCode}`));
+                  reject(
+                     new Error(
+                        `Failed to upload file, status code: ${res.statusCode}`
+                     )
+                  );
                }
             }
          );
@@ -379,7 +429,7 @@ function uploadFile(localFilePath: string, uploadUrl: string): Promise<void> {
          req.write(data);
          req.end();
       });
-  });
+   });
 }
 
 function convertPdfToJson(
@@ -394,7 +444,7 @@ function convertPdfToJson(
          name: path.basename(destinationFile),
          password,
          pages,
-         url: uploadedFileUrl,
+         url: uploadedFileUrl
       });
 
       const options = {
@@ -402,10 +452,10 @@ function convertPdfToJson(
          path: '/v1/pdf/convert/to/json',
          method: 'POST',
          headers: {
-         'x-api-key': apiKey,
-         'Content-Type': 'application/json',
-         'Content-Length': Buffer.byteLength(postData),
-         },
+            'x-api-key': apiKey,
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(postData)
+         }
       };
 
       const req = https.request(options, (res) => {
@@ -419,7 +469,7 @@ function convertPdfToJson(
                const fileStream = fs.createWriteStream(destinationFile);
                https.get(json.url, (response) => {
                   response.pipe(fileStream).on('close', () => {
-                  resolve(json.url);
+                     resolve(json.url);
                   });
                });
             } else {
