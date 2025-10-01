@@ -20,34 +20,52 @@ const WhatIfCutForm: FC<IWhatIfCutFormProps> = ({ chartData }) => {
    const [AIResponse, setAIResponse] = useState<string>('');
    const { handleSubmit, control } = useForm<ICutFormData>();
 
-   const { mutateAsync, error } = useAIAdvice();
+   const { mutateAsync, error, isPending } = useAIAdvice();
 
    const onSubmit = async (formData: ICutFormData): Promise<void> => {
       try {
-         const response = await mutateAsync({ promptType: 'cutSpendings', value: formData.value ?? 'в целом', expenses: chartData });
+         const response = await mutateAsync({
+            promptType: 'cutSpendings',
+            value: formData.value ?? 'в целом',
+            expenses: chartData
+         });
 
          setAIResponse(response.answer.replaceAll('*', ''));
-      }
-      catch (error) {
+      } catch (error) {
          console.error(error);
       }
    };
 
    return (
-      <Flex vertical align='center' gap='small'>
-         <div>Что если сократить траты на <Typewriter words={words}/>?</div>
+      <Flex
+         vertical
+         align="center"
+         gap="small"
+         className={styles.mainContainer}
+      >
+         <div>
+            Что если сократить траты на <Typewriter words={words} />?
+         </div>
          <Form onFinish={handleSubmit(onSubmit)}>
-            <Flex vertical align='center' gap='middle'>
-               <Form.Item label='Введите категорию или название'>
-                  <Controller name='value' control={control} render={({ field }) => <Input {...field} />} />
+            <Flex vertical align="center" gap="middle">
+               <Form.Item label="Введите категорию или название">
+                  <Controller
+                     name="value"
+                     control={control}
+                     render={({ field }) => <Input {...field} />}
+                  />
                </Form.Item>
-               <Button htmlType='submit' type='default'>Представить</Button>
+               <Button htmlType="submit" type="default" loading={isPending}>
+                  Представить
+               </Button>
                {AIResponse && <p className={styles.response}>{AIResponse}</p>}
-               {error && <p>Ошибка: {error.message}</p>}
+               {error && (
+                  <p className={styles.response}>Ошибка: {error.message}</p>
+               )}
             </Flex>
          </Form>
       </Flex>
-   )
-}
+   );
+};
 
-export default WhatIfCutForm
+export default WhatIfCutForm;

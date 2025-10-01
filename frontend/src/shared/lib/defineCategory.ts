@@ -1,11 +1,22 @@
-import { categoryKeywords } from "./categoryKeywords";
+import { categoryKeywords } from './categoryKeywords';
 
-export const defineCategory = (desc: string): string => {
-   for (const [category, keywords] of Object.entries(categoryKeywords)) {
-      if (keywords.some(keyword => desc.toLowerCase().includes(keyword))) {
+export const defineCategory = (
+   desc: string,
+   userCategories: Record<string, string[]> = {}
+): string => {
+   const lowerDesc = desc.toLowerCase();
+
+   for (const [category, keywords] of Object.entries(userCategories)) {
+      if (keywords.some((keyword) => lowerDesc.includes(keyword.toLowerCase()))) {
          return category;
       }
    }
 
-   return 'Неизвестно';
+   for (const [category, keywords] of Object.entries(categoryKeywords)) {
+      if (keywords.some((keyword) => lowerDesc.includes(keyword.toLowerCase()))) {
+         return category;
+      }
+   }
+
+   return 'Другое';
 };
