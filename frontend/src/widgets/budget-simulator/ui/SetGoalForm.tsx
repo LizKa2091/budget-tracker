@@ -23,7 +23,7 @@ const SetGoalForm: FC<ISetGoalFormProps> = ({ chartData }) => {
       trigger
    } = useForm<IGoalFormData>();
 
-   const { mutateAsync, error } = useAIAdvice();
+   const { mutateAsync, error, isPending } = useAIAdvice();
 
    const onSubmit = async (formData: IGoalFormData): Promise<void> => {
       try {
@@ -54,22 +54,30 @@ const SetGoalForm: FC<ISetGoalFormProps> = ({ chartData }) => {
                   label="Введите сумму"
                   required
                   validateStatus={errors.goalValue ? 'error' : ''}
-                  help={errors.goalValue && 'Обязательное поле'}
+                  help={errors.goalValue?.message}
                >
                   <Controller
                      name="goalValue"
                      control={control}
-                     rules={{ required: true }}
+                     rules={{
+                        required: 'Введите сумму',
+                        minLength: {
+                           value: 2,
+                           message: 'Минимальная длина: 2 символа'
+                        }
+                     }}
                      render={({ field }) => (
                         <InputNumber {...field} className={styles.inputGoal} />
                      )}
                   />
                </Form.Item>
-               <Button htmlType="submit" type="default">
+               <Button htmlType="submit" type="default" loading={isPending}>
                   Поставить цель
                </Button>
-               {AIResponse && <p>{AIResponse}</p>}
-               {error && <p>Ошибка: {error.message}</p>}
+               {AIResponse && <p className={styles.response}>{AIResponse}</p>}
+               {error && (
+                  <p className={styles.response}>Ошибка: {error.message}</p>
+               )}
             </Flex>
          </Form>
       </Flex>
