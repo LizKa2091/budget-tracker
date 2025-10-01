@@ -1,7 +1,7 @@
 import {
    createAsyncThunk,
    createSlice,
-   type PayloadAction,
+   type PayloadAction
 } from '@reduxjs/toolkit';
 import { categorizeExpenses } from '../../shared/lib/categorizeExpenses';
 import type { IChartSlot } from '../../shared/types/charts';
@@ -11,7 +11,7 @@ import { saveChartsToStorage } from '../../shared/lib/chartsLocalStorage';
 import type {
    IAddChartThunkArgs,
    IAddChartThunkResponse,
-   IAddExpensePayload,
+   IAddExpensePayload
 } from './chartStoreTypes';
 
 interface IChartState {
@@ -29,9 +29,9 @@ const initialState: IChartState = {
            { id: 1, name: null, data: null },
            { id: 2, name: null, data: null },
            { id: 3, name: null, data: null },
-           { id: 4, name: null, data: null },
+           { id: 4, name: null, data: null }
         ],
-   userCategories: savedCategories ? JSON.parse(savedCategories) : {},
+   userCategories: savedCategories ? JSON.parse(savedCategories) : {}
 };
 
 const chartSlice = createSlice({
@@ -58,13 +58,10 @@ const chartSlice = createSlice({
 
          const updatedChartData = [
             ...chart.data,
-            { date, title, amount, category },
+            { date, title, amount, category }
          ];
          chart.data = updatedChartData;
-         chart.categorizedData = categorizeExpenses(
-            updatedChartData,
-            state.userCategories
-         );
+         chart.categorizedData = categorizeExpenses(updatedChartData);
 
          const newCategory = category.trim().toLowerCase();
 
@@ -80,7 +77,7 @@ const chartSlice = createSlice({
          }
 
          saveChartsToStorage(state);
-      },
+      }
    },
    extraReducers: (builder) => {
       builder.addCase(addChartThunk.fulfilled, (state, action) => {
@@ -101,7 +98,7 @@ const chartSlice = createSlice({
                        ...slot,
                        data: newSlotData,
                        categorizedData,
-                       name: chartName,
+                       name: chartName
                     }
                   : slot;
             });
@@ -110,7 +107,7 @@ const chartSlice = createSlice({
                id: state.charts[3]?.id ?? 4,
                data: newSlotData,
                categorizedData: categorizedData,
-               name: chartName,
+               name: chartName
             };
 
             state.charts = [...state.charts.slice(1), newChart];
@@ -122,7 +119,7 @@ const chartSlice = createSlice({
             JSON.stringify(state.userCategories)
          );
       });
-   },
+   }
 });
 
 export const addChartThunk = createAsyncThunk<
@@ -130,13 +127,10 @@ export const addChartThunk = createAsyncThunk<
    IAddChartThunkArgs,
    { state: RootState }
 >('charts/addChart', async ({ newSlotData, chartName }, { getState }) => {
-   const state = getState();
-   const userCategories = state.charts.userCategories;
-
    return {
       newSlotData,
       chartName,
-      categorizedData: categorizeExpenses(newSlotData, userCategories),
+      categorizedData: categorizeExpenses(newSlotData)
    };
 });
 
