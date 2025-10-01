@@ -1,11 +1,11 @@
 import axios, {
    AxiosError,
-   AxiosInstance,
-   AxiosRequestConfig,
-   AxiosResponse,
+   type AxiosInstance,
+   type AxiosRequestConfig,
+   type AxiosResponse,
    isAxiosError,
-   InternalAxiosRequestConfig,
-   AxiosRequestHeaders
+   type InternalAxiosRequestConfig,
+   type AxiosRequestHeaders
 } from 'axios';
 import { extractExpFromJson } from '../lib/extractExpFromJson';
 import type { IExpenseItem } from '../types/expenses';
