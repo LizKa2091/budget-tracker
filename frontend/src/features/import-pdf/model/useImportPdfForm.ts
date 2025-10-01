@@ -1,13 +1,17 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useImportPdf } from "./useImportPdf";
-import { mapExpensesWithCategories } from "../lib/mapExpensesWithCategories";
-import { useChartStore } from "../../../shared/store-hooks/useChartStore";
-import type { IFormValues } from "../types";
-import type { IExpenseItem } from "../../../shared/types/expenses";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useImportPdf } from './useImportPdf';
+import { mapExpensesWithCategories } from '../lib/mapExpensesWithCategories';
+import { useChartStore } from '../../../shared/store-hooks/useChartStore';
+import type { IFormValues } from '../types';
+import type { IExpenseItem } from '../../../shared/types/expenses';
 
 export const useImportPdfForm = () => {
-   const { handleSubmit, control, formState: { errors } } = useForm<IFormValues>();
+   const {
+      handleSubmit,
+      control,
+      formState: { errors }
+   } = useForm<IFormValues>();
    const { mutate: importPdf, isPending, isSuccess } = useImportPdf();
    const { addChart } = useChartStore();
    const [message, setMessage] = useState<string>('');
@@ -17,14 +21,24 @@ export const useImportPdfForm = () => {
 
       importPdf(data.pdfFile, {
          onSuccess: (expenseItems: IExpenseItem[]) => {
+            console.log('✅ before success importPdf:', expenseItems);
             const expenseItemsMapped = mapExpensesWithCategories(expenseItems);
             setMessage('Файл успешно загружен');
 
+            console.log('✅ after importPdf:', expenseItemsMapped);
             addChart(expenseItemsMapped, data.chartName);
          },
-         onError: (err: Error) => setMessage(err.message || "Произошла ошибка при загрузке файла")
+         onError: (err: Error) =>
+            setMessage(err.message || 'Произошла ошибка при загрузке файла')
       });
    };
 
-   return { handleSubmit: handleSubmit(onSubmit), control, errors, isPending, isSuccess, message }
+   return {
+      handleSubmit: handleSubmit(onSubmit),
+      control,
+      errors,
+      isPending,
+      isSuccess,
+      message
+   };
 };
