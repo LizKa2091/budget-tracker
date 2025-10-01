@@ -124,7 +124,7 @@ export const addChartThunk = createAsyncThunk<
    IAddChartThunkResponse,
    IAddChartThunkArgs,
    { state: RootState }
->('charts/addChart', async ({ newSlotData, chartName }, { getState }) => {
+>('charts/addChart', async ({ newSlotData, chartName }) => {
    return {
       newSlotData,
       chartName,
