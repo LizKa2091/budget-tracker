@@ -1,34 +1,40 @@
-import axios from 'axios';
+import axios, {
+   AxiosError,
+   type AxiosInstance,
+   type AxiosRequestConfig,
+   type AxiosResponse,
+   isAxiosError,
+   type InternalAxiosRequestConfig,
+   type AxiosRequestHeaders
+} from 'axios';
 import { extractExpFromJson } from '../lib/extractExpFromJson';
 import type { IExpenseItem } from '../types/expenses';
-import { isAxiosError } from 'axios';
-import type { AxiosResponse } from 'axios';
-import type { AxiosError } from 'axios';
+
+interface AxiosRequestConfigWithRetry extends InternalAxiosRequestConfig {
+   _retry?: boolean;
+}
 
 interface IAxiosErrorResponse {
    message: string;
-};
+}
 
 interface IRefreshResponse {
    token: string;
-};
+}
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4000';
 const safeErrMessage = 'Ошибка на сервере';
 
-const importPdfAxios = axios.create({
-   baseURL: baseUrl
-});
+const createAxios = (options: AxiosRequestConfig = {}): AxiosInstance => {
+   return axios.create({
+      baseURL: baseUrl,
+      ...options
+   });
+};
 
-const tokenAxios = axios.create({
-   baseURL: baseUrl,
-   withCredentials: true
-});
-
-const refreshAxios = axios.create({
-  baseURL: baseUrl,
-  withCredentials: true,
-});
+const importPdfAxios = createAxios();
+const tokenAxios = createAxios({ withCredentials: true });
+const refreshAxios = createAxios({ withCredentials: true });
 
 const handleAxiosError = (err: unknown): never => {
    if (isAxiosError(err)) {
@@ -43,7 +49,7 @@ const handleAxiosError = (err: unknown): never => {
 };
 
 importPdfAxios.interceptors.request.use(
-   (config) => {
+   (config: InternalAxiosRequestConfig) => {
       const configData = config.data as { file?: File };
 
       if (configData?.file instanceof File) {
@@ -55,25 +61,31 @@ importPdfAxios.interceptors.request.use(
    }
 );
 importPdfAxios.interceptors.response.use(
-   (res) => {
+   (res: AxiosResponse) => {
       res.data = extractExpFromJson(res.data) as IExpenseItem[];
       return res;
    },
-   (err) => {
+   (err: unknown) => {
       handleAxiosError(err);
    }
 );
 
-tokenAxios.interceptors.request.use(
-   (config) => {
-      const token = localStorage.getItem('token');
+tokenAxios.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+   const token = localStorage.getItem('token');
 
-      if (token) {
-         config.headers = { ...config.headers, Authorization: `Bearer ${token}` };
+   if (token) {
+      config.headers = config.headers ?? {};
+
+      const headers = config.headers as AxiosRequestHeaders;
+
+      if (typeof headers.set === 'function') {
+         headers.set('Authorization', `Bearer ${token}`);
+      } else {
+         headers['Authorization'] = `Bearer ${token}`;
       }
-      return config;
    }
-);
+   return config;
+});
 
 tokenAxios.interceptors.response.use(
    (res: AxiosResponse) => {
@@ -83,25 +95,39 @@ tokenAxios.interceptors.response.use(
 
       return res;
    },
-   async (err) => {
-      if (err.response?.status === 401 && !err.config._retry) {
-         err.config._retry = true;
+   async (err: AxiosError<IRefreshResponse, AxiosRequestConfigWithRetry>) => {
+      const initialConfig = err.config as
+         | AxiosRequestConfigWithRetry
+         | undefined;
+
+      if (
+         err.response?.status === 401 &&
+         initialConfig &&
+         initialConfig._retry
+      ) {
+         initialConfig._retry = true;
 
          try {
-            const { data } = await refreshAxios.post<IRefreshResponse>('/refresh');
+            const { data } = await refreshAxios.post<IRefreshResponse>(
+               '/refresh'
+            );
             localStorage.setItem('token', data.token);
 
-            err.config.headers = { ...err.config.headers, Authorization: `Bearer ${data.token}` };
-            return tokenAxios(err.config);
-         }
-         catch (error) {
+            if (initialConfig.headers) {
+               initialConfig.headers.set?.(
+                  'Authorization',
+                  `Bearer ${data.token}`
+               );
+            }
+            return tokenAxios(initialConfig);
+         } catch (error) {
             localStorage.removeItem('token');
-            
+
             handleAxiosError(error);
          }
       }
       handleAxiosError(err);
    }
-)
+);
 
 export { importPdfAxios, tokenAxios };
