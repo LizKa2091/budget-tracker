@@ -368,7 +368,7 @@ app.post('/chat', async (req: Request, res: Response) => {
                Authorization: `Bearer ${openrouterApiKey}`
             },
             body: JSON.stringify({
-               model: 'deepseek/deepseek-chat-v3-0324:free',
+               model: 'openai/gpt-4o-mini',
                messages: [{ role: 'user', content: fullPrompt }]
             })
          }
