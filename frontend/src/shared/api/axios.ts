@@ -7,7 +7,6 @@ import axios, {
    type InternalAxiosRequestConfig,
    type AxiosRequestHeaders
 } from 'axios';
-import { extractExpFromJson } from '../lib/extractExpFromJson';
 import type { IExpenseItem } from '../types/expenses';
 
 interface AxiosRequestConfigWithRetry extends InternalAxiosRequestConfig {
@@ -62,7 +61,9 @@ importPdfAxios.interceptors.request.use(
 );
 importPdfAxios.interceptors.response.use(
    (res: AxiosResponse) => {
-      res.data = extractExpFromJson(res.data) as IExpenseItem[];
+      if (Array.isArray(res.data?.result)) {
+         res.data = res.data.result as IExpenseItem[];
+      }
       return res;
    },
    (err: unknown) => {
