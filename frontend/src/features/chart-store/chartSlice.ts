@@ -19,20 +19,18 @@ interface IChartState {
    userCategories: Record<string, string[]>;
 }
 
-const savedCharts = localStorage.getItem('charts');
-const savedCategories = localStorage.getItem('userCategories');
-
-const initialState: IChartState = {
-   charts: savedCharts
-      ? JSON.parse(savedCharts)
-      : [
+const savedState = localStorage.getItem('charts');
+const initialState: IChartState = savedState
+   ? JSON.parse(savedState)
+   : {
+        charts: [
            { id: 1, name: null, data: null },
            { id: 2, name: null, data: null },
            { id: 3, name: null, data: null },
            { id: 4, name: null, data: null }
         ],
-   userCategories: savedCategories ? JSON.parse(savedCategories) : {}
-};
+        userCategories: {}
+     };
 
 const chartSlice = createSlice({
    name: 'charts',
