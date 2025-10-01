@@ -271,15 +271,13 @@ app.post(
    upload.single('pdfFile'),
    async (req: Request, res: Response) => {
       try {
-         if (!req.file) {
+         if (!req.file)
             return res.status(400).json({ error: 'Файл не передан' });
-         }
 
          const uploadedFilePath = req.file.path;
          const fileName = req.file.originalname;
 
          const presignedData = await getPresignedUrl(API_KEY, fileName);
-
          await uploadFile(uploadedFilePath, presignedData.uploadUrl);
          await convertPdfToJson(
             API_KEY,
@@ -289,15 +287,51 @@ app.post(
             DESTINATION_FILE
          );
 
-         const resultJson = fs.readFileSync(DESTINATION_FILE, 'utf8');
-         const parsedResult = JSON.parse(resultJson);
+         const rawJson = fs.readFileSync(DESTINATION_FILE, 'utf8');
+         const parsedJson = JSON.parse(rawJson);
+
+         const expenses: { date: string; title: string; amount: number }[] = [];
+
+         const pages = parsedJson.document?.page || [];
+         for (const page of pages) {
+            const rows = page.row || [];
+            for (const row of rows) {
+               const columns = row.column || [];
+
+               const date = columns[0]?.text?.['#text']?.trim() || '';
+               const rawAmount = columns[3]?.text?.['#text']?.trim() || '';
+
+               if (!date || !rawAmount) continue;
+
+               const amount = parseFloat(
+                  rawAmount
+                     .replace(/[−–—]/, '-')
+                     .replace(/[\s₽]/g, '')
+                     .replace(',', '.')
+               );
+               if (isNaN(amount)) continue;
+
+               let title = '';
+               for (const col of columns) {
+                  const text = col?.text?.['#text']?.trim() || '';
+                  if (!text) continue;
+                  if (text.includes('₽')) continue;
+                  if (/^\d{2}\.\d{2}\.\d{4}$/.test(text)) continue;
+                  if (text.toLowerCase().includes('операции')) continue;
+                  title = text;
+                  break;
+               }
+
+               expenses.push({ date, title, amount });
+            }
+         }
 
          fs.unlink(uploadedFilePath, () => {});
 
-         res.json({ message: 'Файл успешно распознан', result: parsedResult });
-      } catch (e: any) {
-         console.error(e);
-         res.status(500).json({ error: e.message || 'unknown error' });
+         res.json({ message: 'Файл успешно распознан', result: expenses });
+      } catch (err: any) {
+         console.error(err);
+         res.status(500).json({ error: err.message || 'unknown error' });
       }
    }
 );
