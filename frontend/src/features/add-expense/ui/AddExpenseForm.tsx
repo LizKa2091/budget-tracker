@@ -65,7 +65,12 @@ const AddExpenseForm: FC<IAddExpenseFormProps> = ({ chartId }) => {
                      control={control}
                      rules={{ required: true }}
                      render={({ field }) => (
-                        <Input {...field} className={styles.input} />
+                        <Input
+                           data-testid="title-input"
+                           aria-label="Название траты"
+                           {...field}
+                           className={styles.input}
+                        />
                      )}
                   />
                </Form.Item>
@@ -81,6 +86,8 @@ const AddExpenseForm: FC<IAddExpenseFormProps> = ({ chartId }) => {
                      rules={{ required: true }}
                      render={({ field }) => (
                         <DatePicker
+                           data-testid="date-input"
+                           aria-label="Дата траты"
                            className={styles.input + ' input'}
                            {...field}
                         />
@@ -103,6 +110,8 @@ const AddExpenseForm: FC<IAddExpenseFormProps> = ({ chartId }) => {
                      }}
                      render={({ field }) => (
                         <InputNumber
+                           data-testid="amount-input"
+                           aria-label="Сумма траты"
                            {...field}
                            className={styles.input}
                            min={1}
@@ -121,7 +130,12 @@ const AddExpenseForm: FC<IAddExpenseFormProps> = ({ chartId }) => {
                      control={control}
                      rules={{ required: true }}
                      render={({ field }) => (
-                        <Input {...field} className={styles.input} />
+                        <Input
+                           {...field}
+                           data-testid="category-input"
+                           aria-label="Категория траты"
+                           className={styles.input}
+                        />
                      )}
                   />
                </Form.Item>
