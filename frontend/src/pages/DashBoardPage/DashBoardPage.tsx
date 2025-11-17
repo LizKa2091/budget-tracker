@@ -1,22 +1,16 @@
 import { type FC } from 'react';
-import { Flex, Layout } from 'antd';
-import HeaderBar from '../../widgets/header-bar/HeaderBar';
-import Notifications from '../../features/notifications/ui/Notifications/Notification';
-import Dashboard from '../../features/dashboard/ui/Dashboard';
+import { Flex } from 'antd';
 
-const { Content } = Layout;
+import MainLayout from '../../app/MainLayout';
+import Dashboard from '../../features/dashboard/ui/Dashboard';
 
 const DashBoardPage: FC = () => {
    return (
-      <Layout>
-         <HeaderBar />
-         <Content>
-            <Flex className="container" wrap="wrap">
-               <Dashboard />
-            </Flex>
-         </Content>
-         <Notifications />
-      </Layout>
+      <MainLayout>
+         <Flex className="container" wrap="wrap">
+            <Dashboard />
+         </Flex>
+      </MainLayout>
    )
 }
 

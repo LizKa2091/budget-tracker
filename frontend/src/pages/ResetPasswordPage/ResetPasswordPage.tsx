@@ -1,24 +1,18 @@
 import type { FC } from 'react';
-import { Flex, Layout } from 'antd';
-import HeaderBar from '../../widgets/header-bar/HeaderBar';
-import ResetPassForm from '../../features/auth/ui/ResetPassForm/ResetPassForm';
-import Notifications from '../../features/notifications/ui/Notifications/Notification';
+import { Flex } from 'antd';
 
-const { Content } = Layout;
+import MainLayout from '../../app/MainLayout';
+import ResetPassForm from '../../features/auth/ui/ResetPassForm/ResetPassForm';
 
 const ResetPasswordPage: FC = () => {
    return (
-      <Layout>
-         <HeaderBar />
-         <Content>
-            <Flex vertical justify='center' align='center' gap='large'>
-               <h2>Сброс пароля</h2>
-               <ResetPassForm />
-            </Flex>
-         </Content>
-         <Notifications />
-      </Layout>
+      <MainLayout>
+         <Flex vertical justify='center' align='center' gap='large'>
+            <h2>Сброс пароля</h2>
+            <ResetPassForm />
+         </Flex>
+      </MainLayout>
    )
 }
 
-export default ResetPasswordPage
+export default ResetPasswordPage;

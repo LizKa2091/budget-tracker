@@ -1,23 +1,17 @@
 import { type FC } from 'react';
-import { Flex, Layout } from 'antd';
-import ImportPdf from '../../features/import-pdf/ui/ImportPdf';
-import HeaderBar from '../../widgets/header-bar/HeaderBar';
-import Notifications from '../../features/notifications/ui/Notifications/Notification';
+import { Flex } from 'antd';
 
-const { Content } = Layout;
+import ImportPdf from '../../features/import-pdf/ui/ImportPdf';
+import MainLayout from '../../app/MainLayout';
 
 const ImportPdfPage: FC = () => {
    return (
-      <Layout>
-         <HeaderBar />
-         <Content>
-            <Flex className='container'>
-               <ImportPdf />
-            </Flex>
-         </Content>
-         <Notifications />
-      </Layout>
+      <MainLayout>
+         <Flex className='container'>
+            <ImportPdf />
+         </Flex>
+      </MainLayout>
    )
 }
 
-export default ImportPdfPage
+export default ImportPdfPage;
