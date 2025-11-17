@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useDashboard } from '../../pages/DashBoardPage/model/useDashboard';
+import { useDashboard } from '../../features/dashboard/model/useDashboard';
 import { useChartStore } from '../../shared/store-hooks/useChartStore'; 
 import { getCategoriesFromChart } from '../../shared/lib/getCategoriesFromChart';
 import { useParams } from 'react-router-dom';

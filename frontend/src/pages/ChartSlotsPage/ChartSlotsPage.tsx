@@ -1,23 +1,17 @@
-import type { FC } from 'react';
-import { Layout, Flex } from 'antd';
-import ChartSlots from '../../features/chart-slots/ui/ChartSlots';
-import HeaderBar from '../../widgets/header-bar/HeaderBar';
-import Notifications from '../../features/notifications/ui/Notifications/Notification';
+import { type FC } from 'react';
+import { Flex } from 'antd';
 
-const { Content } = Layout;
+import ChartSlots from '../../features/chart-slots/ui/ChartSlots';
+import MainLayout from '../../app/MainLayout';
 
 const ChartSlotsPage: FC = () => {
    return (
-      <Layout>
-         <HeaderBar />
-         <Content>
-            <Flex className="container">
-               <ChartSlots />
-            </Flex>
-         </Content>
-         <Notifications />
-      </Layout>
-   );
-};
+      <MainLayout>
+         <Flex className="container">
+            <ChartSlots />
+         </Flex>
+      </MainLayout>
+   )
+}
 
 export default ChartSlotsPage;
