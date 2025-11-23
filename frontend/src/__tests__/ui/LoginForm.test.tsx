@@ -63,7 +63,7 @@ describe('LoginForm tests', () => {
       await userEvent.click(button);
 
       await waitFor(() => {
-         expect(loginMock).toHaveBeenCalledWith('user@hmail.com', '123456');
+         expect(loginMock).toHaveBeenCalledWith('user@gmail.com', '123456');
       });
 
       expect(
