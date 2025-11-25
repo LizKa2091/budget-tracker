@@ -6,11 +6,16 @@
 ![Recharts](https://img.shields.io/badge/Recharts-3.1.0-22B5BF?logo=recharts)
 ![SCSS](https://img.shields.io/badge/SCSS-1.89.2-CC6699?logo=sass)
 ![Ant Design](https://img.shields.io/badge/AntDesign-5.26.5-0170FE?logo=ant-design)
-![Vite](https://img.shields.io/badge/Vite-7.0.4-646CFF?logo=vite) 
+![Vite](https://img.shields.io/badge/Vite-7.0.4-646CFF?logo=vite)
+
+![Vitest](https://img.shields.io/badge/Tested%20with-Vitest-6E9F18?logo=vitest&logoColor=white)
+![React Testing Library](https://img.shields.io/badge/React%20Testing%20Library-FF4154?logo=testinglibrary&logoColor=white)
+![Coverage](https://img.shields.io/badge/Coverage-67.66%25-brightgreen)
+
 ![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000?logo=vercel)
 
 # Budget Tracker
-Веб-приложение для учёта личных финансов — управление расходами и доходами, категории, статистика и визуализация данных.
+Веб-приложение для учёта личных финансов - управление расходами и доходами, категории, статистика и визуализация данных.
 
 🔗 [Демо](https://budget-tracker-client.vercel.app/)
 
@@ -30,19 +35,27 @@
 
 ### Frontend
 - React + TypeScript
-- SCSS
+- SCSS Modules
 - React Hook Form (для форм и валидации)
 - React Query + Axios (для работы с API, кеширования)
 - Recharts (для построения графиков)
 - React Router DOM (для роутинга)
 - Context API (для глобального состояния)
 - Vite (для сборки)
+- Vitest, React Testing library (для тестирования)
 
 ### Backend
 - Node.js + Express
 - TypeScript   
 - JWT (авторизация)
 - Multer (работа с файлами)
+  
+---
+
+### Тестирование:
+Проект покрыт тестами с использованием Vitest и React Testing Library. Покрываемость отображена в виде таблицы:
+![Покрытие тестами](./screenshots/tests-coverage.png)
+
 ---
 
 ## 📦 Запуск и установка проекта
@@ -50,7 +63,11 @@
 ```
 git clone https://github.com/LizKa2091/budget-tracker.git
 ```
-Для работы проекта необходимо создать создать файл `.env` в директории `backend`, добавить `JWT_SECRET`, `JWT_REFRESH_SECRET`, `GITHUB_CLIENT_SECRET`, `GITHUB_CLIENT_ID`, `CLIENT_URL` (по умолчанию http://localhost:5173)
+Для работы проекта необходимо создать файл `.env` в директории `frontend`, добавить `VITE_API_BASE_URL` (url сервера для запросов, рекомендуется http://localhost:4000):
+```
+VITE_API_BASE_URL="http://localhost:4000"
+```
+И создать файл `.env` в директории `backend`, добавить `PDFCO_API_KEY`, `OPENROUTER_API_KEY`, `JWT_SECRET`, `JWT_REFRESH_SECRET`, `CLIENT_URL`, `PORT`
 ### Frontend
 Установите пакеты: <br />
 ```
