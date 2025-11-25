@@ -2,7 +2,6 @@ import '@testing-library/jest-dom';
 import dayjs from 'dayjs';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import AddExpenseForm from '../../features/add-expense/ui/AddExpenseForm';
 import { useChartStore } from '../../shared/store-hooks/useChartStore';
 
@@ -11,10 +10,10 @@ vi.mock('../../shared/store-hooks/useChartStore', () => ({
 }));
 
 vi.mock('antd', async (importOriginal) => {
-   const actualAntd = await importOriginal<typeof import('antd')>();
+   const actual = await importOriginal<typeof import('antd')>();
    return {
-      ...actualAntd,
-      DatePicker: ({ onChange, value, ...rest }: any) => (
+      ...actual,
+      DatePicker: ({ value, onChange, ...rest }: any) => (
          <input
             type="date"
             data-testid="date-input"
@@ -24,50 +23,48 @@ vi.mock('antd', async (importOriginal) => {
             }
             {...rest}
          />
-      )
+      ),
    };
 });
 
-describe('addExpenseForm tests', () => {
-   const mockUseChartStore = vi.fn();
-   const testChartId = 1;
+describe('AddExpenseForm', () => {
+   const addExpenseMock = vi.fn();
 
    beforeEach(() => {
       vi.clearAllMocks();
-      (useChartStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
-         addExpense: mockUseChartStore
+
+      (useChartStore as any).mockReturnValue({
+         addExpense: addExpenseMock
       });
    });
 
    test('calls addExpense with correct data', async () => {
-      render(<AddExpenseForm chartId={testChartId} />);
+      render(<AddExpenseForm chartId={10} />);
 
-      const titleInput = screen.getByTestId('title-input');
-      const categoryInput = screen.getByTestId('category-input');
-      const amountInput = screen.getByTestId('amount-input');
-      const dateInput = screen.getByTestId('date-input');
+      fireEvent.change(screen.getByTestId('title-input'), {
+         target: { value: 'Еда' }
+      });
+      fireEvent.change(screen.getByTestId('category-input'), {
+         target: { value: 'Продукты' }
+      });
+      fireEvent.change(screen.getByTestId('amount-input'), {
+         target: { value: '500' }
+      });
+      fireEvent.change(screen.getByTestId('date-input'), {
+         target: { value: '2025-01-01' }
+      });
 
-      await userEvent.type(titleInput, 'Булочка с корицей');
-      await userEvent.type(categoryInput, 'Продукты');
-
-      fireEvent.change(amountInput, { target: { value: '70' } });
-      fireEvent.change(dateInput, { target: { value: '2025-01-01' } });
-
-      const submitBtn = screen.getByRole('button', { name: 'Добавить' });
-
-      await userEvent.click(submitBtn);
+      fireEvent.click(screen.getByRole('button', { name: /добавить/i }));
 
       await waitFor(() => {
-         expect(mockUseChartStore).toHaveBeenCalledTimes(1);
-         expect(mockUseChartStore).toHaveBeenCalledWith(
-            expect.objectContaining({
-               chartId: 1,
-               title: 'Булочка с корицей',
-               category: 'Продукты',
-               amount: 70,
-               date: expect.any(String)
-            })
-         );
+         expect(addExpenseMock).toHaveBeenCalledTimes(1);
+         expect(addExpenseMock).toHaveBeenCalledWith({
+            chartId: 10,
+            category: 'Продукты',
+            date: dayjs('2025-01-01').startOf('day').toISOString(),
+            title: 'Еда',
+            amount: 500
+         });
       });
    });
 });
